@@ -1,40 +1,50 @@
-<h2>Add Application</h2>
+<h2>{{ isEditing ? 'Edit Application' : 'Add Application' }}</h2>
 
 <form [formGroup]="form" (ngSubmit)="onSubmit()">
   <div>
-    <label for="company">Company</label>
-    <input id="company" formControlName="company" />
+    <label>
+      Company
+      <input formControlName="company" />
+    </label>
     @if (form.controls.company.touched && form.controls.company.invalid) {
       <small>Company is required.</small>
     }
   </div>
 
   <div>
-    <label for="position">Position</label>
-    <input id="position" formControlName="position" />
+    <label>
+      Position
+      <input formControlName="position" />
+    </label>
     @if (form.controls.position.touched && form.controls.position.invalid) {
       <small>Position is required.</small>
     }
   </div>
 
   <div>
-    <label for="status">Status</label>
-    <select id="status" formControlName="status">
-      <option value="applied">Applied</option>
-      <option value="interviewing">Interviewing</option>
-      <option value="offer">Offer</option>
-      <option value="rejected">Rejected</option>
-    </select>
+    <label>
+      Status
+      <select formControlName="status">
+        <option value="applied">Applied</option>
+        <option value="interviewing">Interviewing</option>
+        <option value="offer">Offer</option>
+        <option value="rejected">Rejected</option>
+      </select>
+    </label>
   </div>
 
   <div>
-    <label for="applied_date">Date applied</label>
-    <input id="applied_date" type="date" formControlName="applied_date" />
+    <label>
+      Date applied
+      <input type="date" formControlName="applied_date" />
+    </label>
   </div>
 
   <div>
-    <label for="notes">Notes</label>
-    <textarea id="notes" formControlName="notes"></textarea>
+    <label>
+      Notes
+      <textarea formControlName="notes"></textarea>
+    </label>
   </div>
 
   @if (errorMessage()) {
@@ -42,6 +52,14 @@
   }
 
   <button type="submit" [disabled]="submitting()">
-    {{ submitting() ? 'Saving…' : 'Add Application' }}
+    @if (submitting()) {
+      Saving…
+    } @else {
+      {{ isEditing ? 'Save Changes' : 'Add Application' }}
+    }
   </button>
+
+  @if (isEditing) {
+    <button type="button" (click)="cancel()">Cancel</button>
+  }
 </form>

@@ -1,15 +1,23 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, input, output, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ApplicationService, ApplicationStatus } from '../../services/application';
+import {
+  ApplicationService,
+  ApplicationStatus,
+  JobApplication,
+} from '../../services/application';
 
 @Component({
   selector: 'app-application-form',
   imports: [ReactiveFormsModule],
   templateUrl: './application-form.html',
 })
-export class ApplicationForm {
+export class ApplicationForm implements OnInit {
   private fb = inject(FormBuilder);
   private service = inject(ApplicationService);
+
+  // Inputs and outputs
+  application = input<JobApplication | null>(null);
+  done = output<void>();
 
   submitting = signal(false);
   errorMessage = signal<string | null>(null);
@@ -22,6 +30,23 @@ export class ApplicationForm {
     notes: [''],
   });
 
+  get isEditing(): boolean {
+    return this.application() !== null;
+  }
+
+  ngOnInit() {
+    const app = this.application();
+    if (app) {
+      this.form.setValue({
+        company: app.company,
+        position: app.position,
+        status: app.status,
+        applied_date: app.applied_date ?? '',
+        notes: app.notes ?? '',
+      });
+    }
+  }
+
   onSubmit() {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
@@ -32,22 +57,33 @@ export class ApplicationForm {
     this.errorMessage.set(null);
 
     const value = this.form.getRawValue();
+    const payload = {
+      ...value,
+      applied_date: value.applied_date || null,
+      notes: value.notes || null,
+    };
 
-    this.service
-      .addApplication({
-        ...value,
-        applied_date: value.applied_date || null,
-        notes: value.notes || null,
-      })
-      .subscribe({
-        next: () => {
+    const app = this.application();
+    const request$ = app
+      ? this.service.updateApplication(app.id, payload)
+      : this.service.addApplication(payload);
+
+    request$.subscribe({
+      next: () => {
+        if (!app) {
           this.form.reset();
-          this.submitting.set(false);
-        },
-        error: () => {
-          this.errorMessage.set('Could not save the application. Please try again.');
-          this.submitting.set(false);
-        },
-      });
+        }
+        this.submitting.set(false);
+        this.done.emit();
+      },
+      error: () => {
+        this.errorMessage.set('Could not save the application. Please try again.');
+        this.submitting.set(false);
+      },
+    });
+  }
+
+  cancel() {
+    this.done.emit();
   }
 }

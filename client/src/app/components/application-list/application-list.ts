@@ -6,10 +6,11 @@ import {
   ApplicationStatus,
   JobApplication,
 } from '../../services/application';
+import { ApplicationForm } from '../application-form/application-form';
 
 @Component({
   selector: 'app-application-list',
-  imports: [DatePipe, TitleCasePipe],
+  imports: [DatePipe, TitleCasePipe, ApplicationForm],
   templateUrl: './application-list.html',
 })
 export class ApplicationList implements OnInit {
@@ -18,6 +19,7 @@ export class ApplicationList implements OnInit {
   applications = toSignal(this.service.applications$, { initialValue: [] });
   statuses: ApplicationStatus[] = ['applied', 'interviewing', 'offer', 'rejected'];
   errorMessage = signal<string | null>(null);
+  editingId = signal<number | null>(null);
 
   ngOnInit() {
     this.service.loadApplications().subscribe();

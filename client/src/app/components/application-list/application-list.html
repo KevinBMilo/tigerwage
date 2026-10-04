@@ -5,30 +5,35 @@
 }
 
 @for (app of applications(); track app.id) {
-  <div class="application">
-    <h3>{{ app.company }}</h3>
-    <p>{{ app.position }}</p>
+  @if (editingId() === app.id) {
+    <app-application-form [application]="app" (done)="editingId.set(null)" />
+  } @else {
+    <div class="application">
+      <h3>{{ app.company }}</h3>
+      <p>{{ app.position }}</p>
 
-    <label>
-      Status:
-      <select #statusSelect (change)="changeStatus(app, statusSelect)">
-        @for (status of statuses; track status) {
-          <option [value]="status" [selected]="status === app.status">
-            {{ status | titlecase }}
-          </option>
-        }
-      </select>
-    </label>
+      <label>
+        Status:
+        <select #statusSelect (change)="changeStatus(app, statusSelect)">
+          @for (status of statuses; track status) {
+            <option [value]="status" [selected]="status === app.status">
+              {{ status | titlecase }}
+            </option>
+          }
+        </select>
+      </label>
 
-    @if (app.applied_date) {
-      <p>Applied {{ app.applied_date | date }}</p>
-    }
-    @if (app.notes) {
-      <p><em>{{ app.notes }}</em></p>
-    }
+      @if (app.applied_date) {
+        <p>Applied {{ app.applied_date | date }}</p>
+      }
+      @if (app.notes) {
+        <p><em>{{ app.notes }}</em></p>
+      }
 
-    <button type="button" (click)="remove(app)">Delete</button>
-  </div>
+      <button type="button" (click)="editingId.set(app.id)">Edit</button>
+      <button type="button" (click)="remove(app)">Delete</button>
+    </div>
+  }
 } @empty {
   <p>No applications yet.</p>
 }
