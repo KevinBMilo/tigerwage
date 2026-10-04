@@ -36,4 +36,24 @@ export class ApplicationService {
       )
     );
   }
+
+  updateApplication(id: number, changes: Partial<NewApplication>): Observable<JobApplication> {
+    return this.http.patch<JobApplication>(`${this.apiUrl}/${id}`, changes).pipe(
+      tap(updated =>
+        this.applicationsSubject.next(
+          this.applicationsSubject.value.map(app => (app.id === updated.id ? updated : app))
+        )
+      )
+    );
+  }
+
+  deleteApplication(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`).pipe(
+      tap(() =>
+        this.applicationsSubject.next(
+          this.applicationsSubject.value.filter(app => app.id !== id)
+        )
+      )
+    );
+  }
 }

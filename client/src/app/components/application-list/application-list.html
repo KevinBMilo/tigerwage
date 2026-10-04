@@ -1,13 +1,33 @@
 <h2>My Applications</h2>
 
+@if (errorMessage()) {
+  <p>{{ errorMessage() }}</p>
+}
+
 @for (app of applications(); track app.id) {
   <div class="application">
     <h3>{{ app.company }}</h3>
-    <p>{{ app.position }} · {{ app.status | titlecase }}</p>
-    <p>Applied {{ app.applied_date | date }}</p>
+    <p>{{ app.position }}</p>
+
+    <label>
+      Status:
+      <select #statusSelect (change)="changeStatus(app, statusSelect)">
+        @for (status of statuses; track status) {
+          <option [value]="status" [selected]="status === app.status">
+            {{ status | titlecase }}
+          </option>
+        }
+      </select>
+    </label>
+
+    @if (app.applied_date) {
+      <p>Applied {{ app.applied_date | date }}</p>
+    }
     @if (app.notes) {
       <p><em>{{ app.notes }}</em></p>
     }
+
+    <button type="button" (click)="remove(app)">Delete</button>
   </div>
 } @empty {
   <p>No applications yet.</p>
