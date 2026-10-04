@@ -1,1 +1,14 @@
-<p>application-list works!</p>
+<h2>My Applications</h2>
+
+@for (app of applications(); track app.id) {
+  <div class="application">
+    <h3>{{ app.company }}</h3>
+    <p>{{ app.position }} · {{ app.status | titlecase }}</p>
+    <p>Applied {{ app.applied_date | date }}</p>
+    @if (app.notes) {
+      <p><em>{{ app.notes }}</em></p>
+    }
+  </div>
+} @empty {
+  <p>No applications yet.</p>
+}

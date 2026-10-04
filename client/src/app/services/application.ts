@@ -6,7 +6,9 @@ export interface JobApplication {
   id: number;
   company: string;
   position: string;
-  status: string;
+  status: 'applied' | 'interviewing' | 'offer' | 'rejected';
+  applied_date: string;
+  notes: string | null;
 }
 
 @Injectable({ providedIn: 'root' })
