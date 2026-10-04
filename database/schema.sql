@@ -1,5 +1,5 @@
-CREATE DATABASE IF NOT EXISTS job_tracker;
-USE job_tracker;
+CREATE DATABASE IF NOT EXISTS occupation;
+USE occupation;
 
 CREATE TABLE users (
   id INT AUTO_INCREMENT PRIMARY KEY,
