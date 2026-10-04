@@ -1,0 +1,47 @@
+<h2>Add Application</h2>
+
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <div>
+    <label for="company">Company</label>
+    <input id="company" formControlName="company" />
+    @if (form.controls.company.touched && form.controls.company.invalid) {
+      <small>Company is required.</small>
+    }
+  </div>
+
+  <div>
+    <label for="position">Position</label>
+    <input id="position" formControlName="position" />
+    @if (form.controls.position.touched && form.controls.position.invalid) {
+      <small>Position is required.</small>
+    }
+  </div>
+
+  <div>
+    <label for="status">Status</label>
+    <select id="status" formControlName="status">
+      <option value="applied">Applied</option>
+      <option value="interviewing">Interviewing</option>
+      <option value="offer">Offer</option>
+      <option value="rejected">Rejected</option>
+    </select>
+  </div>
+
+  <div>
+    <label for="applied_date">Date applied</label>
+    <input id="applied_date" type="date" formControlName="applied_date" />
+  </div>
+
+  <div>
+    <label for="notes">Notes</label>
+    <textarea id="notes" formControlName="notes"></textarea>
+  </div>
+
+  @if (errorMessage()) {
+    <p>{{ errorMessage() }}</p>
+  }
+
+  <button type="submit" [disabled]="submitting()">
+    {{ submitting() ? 'Saving…' : 'Add Application' }}
+  </button>
+</form>

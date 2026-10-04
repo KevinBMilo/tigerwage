@@ -2,14 +2,18 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 
+export type ApplicationStatus = 'applied' | 'interviewing' | 'offer' | 'rejected';
+
 export interface JobApplication {
   id: number;
   company: string;
   position: string;
-  status: 'applied' | 'interviewing' | 'offer' | 'rejected';
-  applied_date: string;
+  status: ApplicationStatus;
+  applied_date: string | null;
   notes: string | null;
 }
+
+export type NewApplication = Omit<JobApplication, 'id'>;
 
 @Injectable({ providedIn: 'root' })
 export class ApplicationService {
@@ -22,6 +26,14 @@ export class ApplicationService {
   loadApplications(): Observable<JobApplication[]> {
     return this.http.get<JobApplication[]>(this.apiUrl).pipe(
       tap(apps => this.applicationsSubject.next(apps))
+    );
+  }
+
+  addApplication(application: NewApplication): Observable<JobApplication> {
+    return this.http.post<JobApplication>(this.apiUrl, application).pipe(
+      tap(created =>
+        this.applicationsSubject.next([created, ...this.applicationsSubject.value])
+      )
     );
   }
 }
