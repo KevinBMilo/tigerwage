@@ -16,6 +16,10 @@ const REFRESH_COOKIE = 'refresh_token';
 const REFRESH_MS = REFRESH_TOKEN_DAYS * 24 * 60 * 60 * 1000;
 const COOKIE_PATH = '/api/auth';
 
+function isBot(body: any): boolean {
+    return typeof body?.hp_field === 'string' && body.hp_field.trim() !== '';
+}
+
 // Creates a refresh token (saved as a hash + sent as a cookie) and returns a new access token
 async function issueTokens(res: Response, userId: number): Promise<string> {
   const refreshToken = createRefreshToken();
@@ -38,25 +42,32 @@ async function issueTokens(res: Response, userId: number): Promise<string> {
 
 // SIGN UP
 router.post('/register', async (req, res) => {
-  const { email, password } = req.body ?? {};
 
-  if (typeof email !== 'string' || !/^\S+@\S+\.\S+$/.test(email.trim())) {
-    res.status(400).json({ error: 'A valid email is required' });
-    return;
-  }
-  if (typeof password !== 'string' || password.length < 8) {
-    res.status(400).json({ error: 'Password must be at least 8 characters' });
-    return;
-  }
+    if (isBot(req.body)) {
+        console.warn('Honeypot triggered on register from', req.ip);
+        res.status(400).json({ error: 'Unable to create account' });
+        return;
+    }
+    
+    const { email, password } = req.body ?? {};
 
-  const normalizedEmail = email.trim().toLowerCase();
+    if (typeof email !== 'string' || !/^\S+@\S+\.\S+$/.test(email.trim())) {
+        res.status(400).json({ error: 'A valid email is required' });
+        return;
+    }
+    if (typeof password !== 'string' || password.length < 8) {
+        res.status(400).json({ error: 'Password must be at least 8 characters' });
+        return;
+    }
 
-  try {
-    const passwordHash = await bcrypt.hash(password, 12);
-    const [result] = await pool.query<ResultSetHeader>(
-      'INSERT INTO users (email, password_hash) VALUES (?, ?)',
-      [normalizedEmail, passwordHash]
-    );
+    const normalizedEmail = email.trim().toLowerCase();
+
+    try {
+        const passwordHash = await bcrypt.hash(password, 12);
+        const [result] = await pool.query<ResultSetHeader>(
+        'INSERT INTO users (email, password_hash) VALUES (?, ?)',
+        [normalizedEmail, passwordHash]
+        );
 
     const accessToken = await issueTokens(res, result.insertId);
     res.status(201).json({
@@ -75,7 +86,14 @@ router.post('/register', async (req, res) => {
 
 // LOG IN
 router.post('/login', async (req, res) => {
-  const { email, password } = req.body ?? {};
+
+    if (isBot(req.body)) {
+        console.warn('Honeypot triggered on login from', req.ip);
+        res.status(401).json({ error: 'Invalid email or password' });
+        return;
+    }
+    
+    const { email, password } = req.body ?? {};
 
   if (typeof email !== 'string' || typeof password !== 'string') {
     res.status(400).json({ error: 'Email and password are required' });

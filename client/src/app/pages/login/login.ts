@@ -8,7 +8,9 @@ import { AuthService } from '../../services/auth';
   selector: 'app-login',
   imports: [ReactiveFormsModule],
   templateUrl: './login.html',
+  styleUrl: './login.scss',
 })
+
 export class Login {
   private fb = inject(FormBuilder);
   private auth = inject(AuthService);
@@ -21,6 +23,7 @@ export class Login {
   form = this.fb.nonNullable.group({
     email: ['', [Validators.required, Validators.email]],
     password: ['', Validators.required],
+    hp_field: ['']
   });
 
   toggleMode() {
@@ -37,11 +40,11 @@ export class Login {
     this.submitting.set(true);
     this.errorMessage.set(null);
 
-    const { email, password } = this.form.getRawValue();
+    const { email, password, hp_field } = this.form.getRawValue();
     const request$ =
       this.mode() === 'login'
-        ? this.auth.login(email, password)
-        : this.auth.register(email, password);
+        ? this.auth.login(email, password, hp_field)
+        : this.auth.register(email, password, hp_field);
 
     request$.subscribe({
       next: () => this.router.navigate(['/']),

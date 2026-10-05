@@ -33,15 +33,15 @@ export class AuthService {
     return this.accessToken;
   }
 
-  login(email: string, password: string): Observable<User> {
+  login(email: string, password: string, hp_field = ''): Observable<User> {
     return this.http
-      .post<AuthResponse>(`${AUTH_URL}/login`, { email, password }, { withCredentials: true })
+      .post<AuthResponse>(`${AUTH_URL}/login`, { email, password, hp_field }, { withCredentials: true })
       .pipe(map(res => this.setSession(res)));
   }
 
-  register(email: string, password: string): Observable<User> {
+  register(email: string, password: string, hp_field = ''): Observable<User> {
     return this.http
-      .post<AuthResponse>(`${AUTH_URL}/register`, { email, password }, { withCredentials: true })
+      .post<AuthResponse>(`${AUTH_URL}/register`, { email, password, hp_field }, { withCredentials: true })
       .pipe(map(res => this.setSession(res)));
   }
 
@@ -88,6 +88,10 @@ export class AuthService {
         })
       )
       .subscribe({ error: () => {} });
+  }
+
+  isBot(body: any): boolean {
+    return typeof body?.hp_field === 'string' && body.hp_field.trim() !== '';
   }
 
   private setSession(res: AuthResponse): User {
