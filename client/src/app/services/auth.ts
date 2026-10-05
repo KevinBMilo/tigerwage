@@ -47,6 +47,14 @@ export class AuthService {
     );
   }
 
+  forgotPassword(email: string): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`${AUTH_URL}/forgot-password`, { email });
+  }
+
+  resetPassword(token: string, password: string): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`${AUTH_URL}/reset-password`, { token, password });
+  }
+
   verifyEmail(token: string): Observable<User> {
     return this.http
       .post<AuthResponse>(`${AUTH_URL}/verify-email`, { token }, { withCredentials: true })
@@ -115,5 +123,11 @@ export class AuthService {
     this.accessToken = null;
     this.user.set(null);
     this.applications.clear();
+  }
+
+  checkResetToken(token: string): Observable<boolean> {
+    return this.http
+      .post<{ valid: boolean }>(`${AUTH_URL}/check-reset-token`, { token })
+      .pipe(map(res => res.valid));
   }
 }

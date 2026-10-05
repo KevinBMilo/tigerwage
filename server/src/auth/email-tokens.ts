@@ -26,6 +26,19 @@ export async function createEmailToken(
   return token;
 }
 
+// Checks whether a token is still usable, without using it up
+export async function isEmailTokenValid(
+  token: string,
+  purpose: EmailTokenPurpose
+): Promise<boolean> {
+  const [rows] = await pool.query<RowDataPacket[]>(
+    `SELECT 1 FROM email_tokens
+     WHERE token_hash = ? AND purpose = ? AND used_at IS NULL AND expires_at > NOW()`,
+    [hashToken(token), purpose]
+  );
+  return rows.length > 0;
+}
+
 // Uses up a token and returns its user ID, or null if it's invalid, expired, or already used
 export async function consumeEmailToken(
   token: string,
