@@ -16,7 +16,7 @@ async function findApplication(id: number, userId: number) {
 
 router.get('/', async (req, res) => {
   try {
-    const userId = 1; // temporary until authentication is added
+    const userId = req.userId!;
     const [rows] = await pool.query(
       `SELECT id, company, position, status, applied_date, notes
        FROM applications
@@ -48,7 +48,7 @@ router.post('/', async (req, res) => {
   }
 
   try {
-    const userId = 1; // temporary until authentication is added
+    const userId = req.userId!;
 
     const [result] = await pool.query<ResultSetHeader>(
       `INSERT INTO applications (user_id, company, position, status, applied_date, notes)
@@ -99,7 +99,7 @@ router.patch('/:id', async (req, res) => {
   }
 
   try {
-    const userId = 1; // temporary until authentication is added
+    const userId = req.userId!;
     const setClause = fields.map(field => `${field} = ?`).join(', ');
 
     const [result] = await pool.query<ResultSetHeader>(
@@ -126,7 +126,7 @@ router.delete('/:id', async (req, res) => {
   }
 
   try {
-    const userId = 1; // temporary until authentication is added
+    const userId = req.userId!;
     const [result] = await pool.query<ResultSetHeader>(
       'DELETE FROM applications WHERE id = ? AND user_id = ?',
       [id, userId]
