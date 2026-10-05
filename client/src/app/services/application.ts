@@ -56,4 +56,8 @@ export class ApplicationService {
       )
     );
   }
+
+  clear() {
+    this.applicationsSubject.next([]);
+  }
 }

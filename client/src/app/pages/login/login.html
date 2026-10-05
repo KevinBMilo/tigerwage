@@ -1,0 +1,52 @@
+<h2>{{ mode() === 'login' ? 'Log in' : 'Create an account' }}</h2>
+
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <div>
+    <label>
+      Email
+      <input type="email" formControlName="email" autocomplete="email" />
+    </label>
+    @if (form.controls.email.touched && form.controls.email.invalid) {
+      <small>Enter a valid email address.</small>
+    }
+  </div>
+
+  <div>
+    <label>
+      Password
+      <input
+        type="password"
+        formControlName="password"
+        [attr.autocomplete]="mode() === 'login' ? 'current-password' : 'new-password'"
+      />
+    </label>
+    @if (form.controls.password.touched && form.controls.password.invalid) {
+      <small>Password is required.</small>
+    }
+    @if (mode() === 'register') {
+      <small>At least 8 characters.</small>
+    }
+  </div>
+
+  @if (errorMessage()) {
+    <p>{{ errorMessage() }}</p>
+  }
+
+  <button type="submit" [disabled]="submitting()">
+    @if (submitting()) {
+      Please wait…
+    } @else {
+      {{ mode() === 'login' ? 'Log in' : 'Create account' }}
+    }
+  </button>
+</form>
+
+<p>
+  @if (mode() === 'login') {
+    Don't have an account?
+    <button type="button" (click)="toggleMode()">Create one</button>
+  } @else {
+    Already have an account?
+    <button type="button" (click)="toggleMode()">Log in</button>
+  }
+</p>

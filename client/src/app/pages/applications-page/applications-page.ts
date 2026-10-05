@@ -1,0 +1,10 @@
+import { Component } from '@angular/core';
+import { ApplicationForm } from '../../components/application-form/application-form';
+import { ApplicationList } from '../../components/application-list/application-list';
+
+@Component({
+  selector: 'app-applications-page',
+  imports: [ApplicationForm, ApplicationList],
+  templateUrl: './applications-page.html',
+})
+export class ApplicationsPage {}
