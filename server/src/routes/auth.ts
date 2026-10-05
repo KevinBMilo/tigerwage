@@ -9,6 +9,7 @@ import {
   REFRESH_TOKEN_DAYS,
 } from '../auth/tokens';
 import { requireAuth } from '../middleware/require-auth';
+import { loginLimiter } from '../middleware/rate-limit';
 
 const router = Router();
 
@@ -41,7 +42,7 @@ async function issueTokens(res: Response, userId: number): Promise<string> {
 }
 
 // SIGN UP
-router.post('/register', async (req, res) => {
+router.post('/register', loginLimiter, async (req, res) => {
 
     if (isBot(req.body)) {
         console.warn('Honeypot triggered on register from', req.ip);
@@ -85,7 +86,7 @@ router.post('/register', async (req, res) => {
 });
 
 // LOG IN
-router.post('/login', async (req, res) => {
+router.post('/login', loginLimiter, async (req, res) => {
 
     if (isBot(req.body)) {
         console.warn('Honeypot triggered on login from', req.ip);

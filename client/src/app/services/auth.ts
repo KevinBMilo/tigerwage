@@ -90,10 +90,6 @@ export class AuthService {
       .subscribe({ error: () => {} });
   }
 
-  isBot(body: any): boolean {
-    return typeof body?.hp_field === 'string' && body.hp_field.trim() !== '';
-  }
-
   private setSession(res: AuthResponse): User {
     this.accessToken = res.accessToken;
     this.loggedOut = false;
