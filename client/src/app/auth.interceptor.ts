@@ -5,7 +5,7 @@ import { catchError, switchMap, throwError } from 'rxjs';
 import { AuthService } from './services/auth';
 
 const API_BASE = 'http://localhost:3000/api';
-const AUTH_ENDPOINTS = /\/api\/auth\/(login|register|refresh|logout)$/;
+const AUTH_ENDPOINTS = /\/api\/auth\/(login|register|refresh|logout|verify-email|resend-verification|forgot-password|reset-password)$/;
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   // Only touch requests to our own API, and leave the auth endpoints alone

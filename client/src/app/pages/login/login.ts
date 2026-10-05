@@ -10,7 +10,6 @@ import { AuthService } from '../../services/auth';
   templateUrl: './login.html',
   styleUrl: './login.scss',
 })
-
 export class Login {
   private fb = inject(FormBuilder);
   private auth = inject(AuthService);
@@ -19,16 +18,18 @@ export class Login {
   mode = signal<'login' | 'register'>('login');
   submitting = signal(false);
   errorMessage = signal<string | null>(null);
+  infoMessage = signal<string | null>(null);
+  needsVerification = signal(false);
 
   form = this.fb.nonNullable.group({
     email: ['', [Validators.required, Validators.email]],
     password: ['', Validators.required],
-    hp_field: ['']
+    hp_field: [''],
   });
 
   toggleMode() {
     this.mode.update(m => (m === 'login' ? 'register' : 'login'));
-    this.errorMessage.set(null);
+    this.resetMessages();
   }
 
   onSubmit() {
@@ -38,20 +39,49 @@ export class Login {
     }
 
     this.submitting.set(true);
-    this.errorMessage.set(null);
-
+    this.resetMessages();
     const { email, password, hp_field } = this.form.getRawValue();
-    const request$ =
-      this.mode() === 'login'
-        ? this.auth.login(email, password, hp_field)
-        : this.auth.register(email, password, hp_field);
 
-    request$.subscribe({
-      next: () => this.router.navigate(['/']),
-      error: (err: HttpErrorResponse) => {
-        this.errorMessage.set(err.error?.error ?? 'Something went wrong. Please try again.');
-        this.submitting.set(false);
+    if (this.mode() === 'register') {
+      this.auth.register(email, password, hp_field).subscribe({
+        next: res => {
+          this.infoMessage.set(res.message);
+          this.mode.set('login');
+          this.form.controls.password.reset();
+          this.submitting.set(false);
+        },
+        error: (err: HttpErrorResponse) => this.handleError(err),
+      });
+    } else {
+      this.auth.login(email, password, hp_field).subscribe({
+        next: () => this.router.navigate(['/']),
+        error: (err: HttpErrorResponse) => this.handleError(err),
+      });
+    }
+  }
+
+  resendVerification() {
+    const email = this.form.controls.email.value;
+    this.auth.resendVerification(email).subscribe({
+      next: res => {
+        this.needsVerification.set(false);
+        this.errorMessage.set(null);
+        this.infoMessage.set(res.message);
       },
+      error: (err: HttpErrorResponse) =>
+        this.errorMessage.set(err.error?.error ?? 'Could not resend the email. Please try again.'),
     });
+  }
+
+  private handleError(err: HttpErrorResponse) {
+    this.errorMessage.set(err.error?.error ?? 'Something went wrong. Please try again.');
+    this.needsVerification.set(err.error?.code === 'EMAIL_NOT_VERIFIED');
+    this.submitting.set(false);
+  }
+
+  private resetMessages() {
+    this.errorMessage.set(null);
+    this.infoMessage.set(null);
+    this.needsVerification.set(false);
   }
 }

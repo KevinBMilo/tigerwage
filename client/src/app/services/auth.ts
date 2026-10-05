@@ -39,11 +39,25 @@ export class AuthService {
       .pipe(map(res => this.setSession(res)));
   }
 
-  register(email: string, password: string, hp_field = ''): Observable<User> {
+  register(email: string, password: string, hp_field = ''): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(
+      `${AUTH_URL}/register`,
+      { email, password, hp_field },
+      { withCredentials: true }
+    );
+  }
+
+  verifyEmail(token: string): Observable<User> {
     return this.http
-      .post<AuthResponse>(`${AUTH_URL}/register`, { email, password, hp_field }, { withCredentials: true })
+      .post<AuthResponse>(`${AUTH_URL}/verify-email`, { token }, { withCredentials: true })
       .pipe(map(res => this.setSession(res)));
   }
+
+  resendVerification(email: string): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`${AUTH_URL}/resend-verification`, { email });
+  }
+
+  
 
   // Returns a new access token, or null if the session has ended.
   // If several requests need a refresh at once, they all share a single call.

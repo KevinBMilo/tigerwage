@@ -1,0 +1,8 @@
+@if (errorMessage()) {
+  <h2>Couldn't confirm your email</h2>
+  <p>{{ errorMessage() }}</p>
+  <p>You can request a new link by trying to log in.</p>
+  <a routerLink="/login">Go to login</a>
+} @else {
+  <p>Confirming your email…</p>
+}
