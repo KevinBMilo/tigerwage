@@ -26,6 +26,12 @@
       @if (app.applied_date) {
         <p>Applied {{ app.applied_date | date }}</p>
       }
+      @if (app.interview_date) {
+        <p>Interview {{ app.interview_date | date }}</p>
+      }
+      @if (app.follow_up_date) {
+        <p>Follow up by {{ app.follow_up_date | date }}</p>
+      }
       @if (app.notes) {
         <p><em>{{ app.notes }}</em></p>
       }

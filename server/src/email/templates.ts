@@ -42,3 +42,56 @@ export function passwordChangedEmail(to: string): EmailMessage {
       `<p>If you made this change, no action is needed. If you didn't, reset your password right away from the login page.</p>`,
   };
 }
+
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+export interface ReminderItem {
+  company: string;
+  position: string;
+  date: string;
+}
+
+export function reminderDigestEmail(
+  to: string,
+  interviews: ReminderItem[],
+  followUps: ReminderItem[],
+  appUrl: string
+): EmailMessage {
+  const textList = (items: ReminderItem[]) =>
+    items.map(i => `  - ${i.company}, ${i.position} (${i.date})`).join('\n');
+
+  const htmlList = (items: ReminderItem[]) =>
+    `<ul>${items
+      .map(i => `<li>${escapeHtml(i.company)}, ${escapeHtml(i.position)} (${i.date})</li>`)
+      .join('')}</ul>`;
+
+  let text = 'Here are your Occupation reminders:\n\n';
+  let html = '<p>Here are your Occupation reminders:</p>';
+
+  if (interviews.length > 0) {
+    text += `Upcoming interviews:\n${textList(interviews)}\n\n`;
+    html += `<h3>Upcoming interviews</h3>${htmlList(interviews)}`;
+  }
+  if (followUps.length > 0) {
+    text += `Time to follow up:\n${textList(followUps)}\n\n`;
+    html += `<h3>Time to follow up</h3>${htmlList(followUps)}`;
+  }
+
+  text += `Open Occupation: ${appUrl}`;
+  html += `<p><a href="${appUrl}">Open Occupation</a></p>`;
+
+  const count = interviews.length + followUps.length;
+  return {
+    to,
+    subject: `Occupation: ${count} reminder${count === 1 ? '' : 's'}`,
+    text,
+    html,
+  };
+}

@@ -10,6 +10,8 @@ export interface JobApplication {
   position: string;
   status: ApplicationStatus;
   applied_date: string | null;
+  interview_date: string | null;
+  follow_up_date: string | null;
   notes: string | null;
 }
 

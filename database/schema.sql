@@ -25,6 +25,10 @@ CREATE TABLE applications (
   position VARCHAR(255) NOT NULL,
   status ENUM('applied','interviewing','offer','rejected') DEFAULT 'applied',
   applied_date DATE,
+  interview_date DATE NULL AFTER applied_date,
+  follow_up_date DATE NULL AFTER interview_date,
+  interview_reminder_sent_at DATETIME NULL,
+  follow_up_reminder_sent_at DATETIME NULL;
   notes TEXT,
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
@@ -37,3 +41,4 @@ CREATE TABLE documents (
   uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (application_id) REFERENCES applications(id) ON DELETE CASCADE
 );
+

@@ -5,6 +5,8 @@ import 'dotenv/config';
 import authRouter from './routes/auth';
 import applicationsRouter from './routes/applications';
 import { requireAuth } from './middleware/require-auth';
+import cron from 'node-cron';
+import { sendReminders } from './jobs/send-reminders';
 
 const app = express();
 
@@ -23,4 +25,14 @@ app.use('/api/auth', authRouter);
 app.use('/api/applications', requireAuth, applicationsRouter);
 
 const port = process.env.PORT || 3000;
+
+if (process.env.REMINDERS_CRON) {
+  cron.schedule(process.env.REMINDERS_CRON, () => {
+    sendReminders()
+      .then(count => console.log(`Reminder job: sent ${count} email(s)`))
+      .catch(err => console.error('Reminder job failed', err));
+  });
+  console.log(`Reminders scheduled: ${process.env.REMINDERS_CRON}`);
+}
+
 app.listen(port, () => console.log(`API running on port ${port}`));

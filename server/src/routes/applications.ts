@@ -6,9 +6,7 @@ const router = Router();
 
 async function findApplication(id: number, userId: number) {
   const [rows] = await pool.query<RowDataPacket[]>(
-    `SELECT id, company, position, status, applied_date, notes
-     FROM applications
-     WHERE id = ? AND user_id = ?`,
+    `SELECT ${APPLICATION_COLUMNS} FROM applications WHERE id = ? AND user_id = ?`,
     [id, userId]
   );
   return rows[0] ?? null;
@@ -18,10 +16,10 @@ router.get('/', async (req, res) => {
   try {
     const userId = req.userId!;
     const [rows] = await pool.query(
-      `SELECT id, company, position, status, applied_date, notes
-       FROM applications
-       WHERE user_id = ?
-       ORDER BY applied_date DESC`,
+      `SELECT ${APPLICATION_COLUMNS}
+      FROM applications
+      WHERE user_id = ?
+      ORDER BY applied_date DESC`,
       [userId]
     );
     res.json(rows);
@@ -33,8 +31,33 @@ router.get('/', async (req, res) => {
 
 const VALID_STATUSES = ['applied', 'interviewing', 'offer', 'rejected'];
 
+const APPLICATION_COLUMNS =
+  'id, company, position, status, applied_date, interview_date, follow_up_date, notes';
+
+function isDateOrEmpty(value: unknown): boolean {
+  return (
+    value === undefined ||
+    value === null ||
+    value === '' ||
+    (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value))
+  );
+}
+
 router.post('/', async (req, res) => {
-  const { company, position, status = 'applied', applied_date, notes } = req.body;
+
+  const {
+    company,
+    position,
+    status = 'applied',
+    applied_date,
+    interview_date,
+    follow_up_date,
+    notes,
+  } = req.body ?? {};
+
+  if (![applied_date, interview_date, follow_up_date].every(isDateOrEmpty)) {
+    return res.status(400).json({ error: 'Dates must be in YYYY-MM-DD format' });
+  }
 
   // Validate input
   if (typeof company !== 'string' || company.trim() === '') {
@@ -51,9 +74,19 @@ router.post('/', async (req, res) => {
     const userId = req.userId!;
 
     const [result] = await pool.query<ResultSetHeader>(
-      `INSERT INTO applications (user_id, company, position, status, applied_date, notes)
-       VALUES (?, ?, ?, ?, ?, ?)`,
-      [userId, company.trim(), position.trim(), status, applied_date || null, notes || null]
+    `INSERT INTO applications
+      (user_id, company, position, status, applied_date, interview_date, follow_up_date, notes)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+        [
+          userId,
+          company.trim(),
+          position.trim(),
+          status,
+          applied_date || null,
+          interview_date || null,
+          follow_up_date || null,
+          notes || null,
+        ]
     );
 
     const created = await findApplication(result.insertId, userId);
@@ -72,7 +105,11 @@ router.patch('/:id', async (req, res) => {
     return res.status(400).json({ error: 'Invalid application id' });
   }
 
-  const { company, position, status, applied_date, notes } = req.body ?? {};
+  const { company, position, status, applied_date, interview_date, follow_up_date, notes } = req.body ?? {};
+
+  if (![applied_date, interview_date, follow_up_date].every(isDateOrEmpty)) {
+    return res.status(400).json({ error: 'Dates must be in YYYY-MM-DD format' });
+  }
 
   // Validate only the fields that were sent
   if (company !== undefined && (typeof company !== 'string' || company.trim() === '')) {
@@ -92,6 +129,15 @@ router.patch('/:id', async (req, res) => {
   if (status !== undefined) updates.status = status;
   if (applied_date !== undefined) updates.applied_date = applied_date || null;
   if (notes !== undefined) updates.notes = notes || null;
+  if (interview_date !== undefined) {
+    updates.interview_date = interview_date || null;
+    updates.interview_reminder_sent_at = null;
+  }
+  if (follow_up_date !== undefined) {
+    updates.follow_up_date = follow_up_date || null;
+    updates.follow_up_reminder_sent_at = null;
+  }
+
 
   const fields = Object.keys(updates);
   if (fields.length === 0) {

@@ -27,7 +27,9 @@ export class ApplicationForm implements OnInit {
     position: ['', [Validators.required, Validators.maxLength(255)]],
     status: ['applied' as ApplicationStatus],
     applied_date: [''],
-    notes: [''],
+    interview_date: [''],
+    follow_up_date: [''],
+    notes: ['']
   });
 
   get isEditing(): boolean {
@@ -42,7 +44,9 @@ export class ApplicationForm implements OnInit {
         position: app.position,
         status: app.status,
         applied_date: app.applied_date ?? '',
-        notes: app.notes ?? '',
+        interview_date: app.interview_date ?? '',
+        follow_up_date: app.follow_up_date ?? '',
+        notes: app.notes ?? ''
       });
     }
   }
@@ -60,6 +64,8 @@ export class ApplicationForm implements OnInit {
     const payload = {
       ...value,
       applied_date: value.applied_date || null,
+      interview_date: value.interview_date || null,
+      follow_up_date: value.follow_up_date || null,
       notes: value.notes || null,
     };
 
