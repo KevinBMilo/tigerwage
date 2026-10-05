@@ -61,5 +61,7 @@
 
   @if (isEditing) {
     <button type="button" (click)="cancel()">Cancel</button>
-  }
+} @else if (form.dirty) {
+    <button type="button" (click)="clear()">Clear</button>
+}
 </form>

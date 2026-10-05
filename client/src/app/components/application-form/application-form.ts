@@ -83,6 +83,11 @@ export class ApplicationForm implements OnInit {
     });
   }
 
+  clear() {
+    this.form.reset();
+    this.errorMessage.set(null);
+  }
+
   cancel() {
     this.done.emit();
   }

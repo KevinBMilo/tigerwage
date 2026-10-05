@@ -29,6 +29,7 @@ export class Login {
 
   toggleMode() {
     this.mode.update(m => (m === 'login' ? 'register' : 'login'));
+    this.form.controls.password.reset();
     this.resetMessages();
   }
 
@@ -76,6 +77,7 @@ export class Login {
   private handleError(err: HttpErrorResponse) {
     this.errorMessage.set(err.error?.error ?? 'Something went wrong. Please try again.');
     this.needsVerification.set(err.error?.code === 'EMAIL_NOT_VERIFIED');
+    this.form.controls.password.reset();
     this.submitting.set(false);
   }
 
