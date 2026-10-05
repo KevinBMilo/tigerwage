@@ -15,6 +15,7 @@ export class Login {
   private auth = inject(AuthService);
   private router = inject(Router);
 
+  registered = signal(false);
   mode = signal<'login' | 'register'>('login');
   submitting = signal(false);
   errorMessage = signal<string | null>(null);
@@ -44,16 +45,17 @@ export class Login {
     const { email, password, hp_field } = this.form.getRawValue();
 
     if (this.mode() === 'register') {
-      this.auth.register(email, password, hp_field).subscribe({
-        next: res => {
-          this.infoMessage.set(res.message);
-          this.mode.set('login');
-          this.form.controls.password.reset();
-          this.submitting.set(false);
-        },
-        error: (err: HttpErrorResponse) => this.handleError(err),
-      });
-    } else {
+  this.auth.register(email, password, hp_field).subscribe({
+    next: res => {
+      this.infoMessage.set(res.message);
+      this.registered.set(true);
+      this.mode.set('login');
+      this.form.controls.password.reset();
+      this.submitting.set(false);
+    },
+    error: (err: HttpErrorResponse) => this.handleError(err),
+  });
+} else {
       this.auth.login(email, password, hp_field).subscribe({
         next: () => this.router.navigate(['/']),
         error: (err: HttpErrorResponse) => this.handleError(err),
@@ -85,5 +87,10 @@ export class Login {
     this.errorMessage.set(null);
     this.infoMessage.set(null);
     this.needsVerification.set(false);
+  }
+
+  backToLogin() {
+    this.registered.set(false);
+    this.resetMessages();
   }
 }

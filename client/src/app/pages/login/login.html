@@ -1,66 +1,83 @@
-<h2>{{ mode() === 'login' ? 'Log in' : 'Create an account' }}</h2>
+@if (registered()) {
+  <h2>Check your email</h2>
+  <p>{{ infoMessage() }}</p>
+  <p>We sent it to <strong>{{ form.controls.email.value }}</strong>.</p>
 
-<form [formGroup]="form" (ngSubmit)="onSubmit()">
-  <div>
-    <label>
-      Email
-      <input type="email" formControlName="email" autocomplete="email" />
-    </label>
-    @if (form.controls.email.touched && form.controls.email.invalid) {
-      <small>Enter a valid email address.</small>
-    }
-  </div>
+  @if (errorMessage()) {
+    <p>{{ errorMessage() }}</p>
+  }
 
-    <div class="hp" aria-hidden="true">
-        <label>
-            Leave this field empty
-            <input formControlName="hp_field" tabindex="-1" autocomplete="off" />
-        </label>
+  <p>
+    Didn't get it? Check your spam folder, or
+    <button type="button" (click)="resendVerification()">resend the email</button>.
+  </p>
+
+  <button type="button" (click)="backToLogin()">Back to log in</button>
+} @else {
+  <h2>{{ mode() === 'login' ? 'Log in' : 'Create an account' }}</h2>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div>
+      <label>
+        Email
+        <input type="email" formControlName="email" autocomplete="email" />
+      </label>
+      @if (form.controls.email.touched && form.controls.email.invalid) {
+        <small>Enter a valid email address.</small>
+      }
     </div>
 
-  <div>
-    <label>
-      Password
-      <input
-        type="password"
-        formControlName="password"
-        [attr.autocomplete]="mode() === 'login' ? 'current-password' : 'new-password'"
-      />
-    </label>
-    @if (form.controls.password.touched && form.controls.password.invalid) {
-      <small>Password is required.</small>
-    }
-    @if (mode() === 'register') {
-      <small>At least 8 characters.</small>
-    }
-  </div>
+    <div>
+      <label>
+        Password
+        <input
+          type="password"
+          formControlName="password"
+          [attr.autocomplete]="mode() === 'login' ? 'current-password' : 'new-password'"
+        />
+      </label>
+      @if (form.controls.password.touched && form.controls.password.invalid) {
+        <small>Password is required.</small>
+      }
+      @if (mode() === 'register') {
+        <small>At least 8 characters.</small>
+      }
+    </div>
 
-  @if (infoMessage()) {
-    <p>{{ infoMessage() }}</p>
+    <div class="hp" aria-hidden="true">
+      <label>
+        Leave this field empty
+        <input formControlName="hp_field" tabindex="-1" autocomplete="off" />
+      </label>
+    </div>
+
+    @if (infoMessage()) {
+      <p>{{ infoMessage() }}</p>
     }
 
     @if (errorMessage()) {
-        <p>{{ errorMessage() }}</p>
-        @if (needsVerification()) {
-            <button type="button" (click)="resendVerification()">Resend confirmation email</button>
-        }
+      <p>{{ errorMessage() }}</p>
+      @if (needsVerification()) {
+        <button type="button" (click)="resendVerification()">Resend confirmation email</button>
+      }
     }
 
-  <button type="submit" [disabled]="submitting()">
-    @if (submitting()) {
-      Please wait…
+    <button type="submit" [disabled]="submitting()">
+      @if (submitting()) {
+        Please wait…
+      } @else {
+        {{ mode() === 'login' ? 'Log in' : 'Create account' }}
+      }
+    </button>
+  </form>
+
+  <p>
+    @if (mode() === 'login') {
+      Don't have an account?
+      <button type="button" (click)="toggleMode()">Create one</button>
     } @else {
-      {{ mode() === 'login' ? 'Log in' : 'Create account' }}
+      Already have an account?
+      <button type="button" (click)="toggleMode()">Log in</button>
     }
-  </button>
-</form>
-
-<p>
-  @if (mode() === 'login') {
-    Don't have an account?
-    <button type="button" (click)="toggleMode()">Create one</button>
-  } @else {
-    Already have an account?
-    <button type="button" (click)="toggleMode()">Log in</button>
-  }
-</p>
+  </p>
+}

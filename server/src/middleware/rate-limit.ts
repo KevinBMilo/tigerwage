@@ -21,3 +21,12 @@ export const registerLimiter = rateLimit({
   legacyHeaders: false,
   message: { error: 'Too many accounts created. Please try again later.' },
 });
+
+// Routes that send emails: 5 per hour per IP
+export const emailLimiter = rateLimit({
+  windowMs: ONE_HOUR,
+  limit: 5,
+  standardHeaders: 'draft-8',
+  legacyHeaders: false,
+  message: { error: 'Too many requests. Please try again later.' },
+});

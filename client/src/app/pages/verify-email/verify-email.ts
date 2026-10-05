@@ -24,8 +24,18 @@ export class VerifyEmail implements OnInit {
 
     this.auth.verifyEmail(token).subscribe({
       next: () => this.router.navigate(['/']),
-      error: err =>
-        this.errorMessage.set(err.error?.error ?? 'Could not confirm your email. Please try again.'),
+      error: err => {
+        // An already-used link is fine if this browser is already logged in
+        this.auth.ensureSession().subscribe(loggedIn => {
+          if (loggedIn) {
+            this.router.navigate(['/']);
+          } else {
+            this.errorMessage.set(
+              err.error?.error ?? 'Could not confirm your email. Please try again.'
+            );
+          }
+        });
+      },
     });
   }
 }
