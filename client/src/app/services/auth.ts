@@ -24,6 +24,7 @@ export class AuthService {
 
   private accessToken: string | null = null;
   private refreshInFlight$: Observable<string | null> | null = null;
+  private loggedOut = false;
 
   readonly user = signal<User | null>(null);
   readonly isLoggedIn = computed(() => this.user() !== null);
@@ -66,24 +67,32 @@ export class AuthService {
     return this.refreshInFlight$;
   }
 
-  // Used by the route guards: are we logged in, or can we quietly become logged in?
   ensureSession(): Observable<boolean> {
     if (this.accessToken) {
       return of(true);
+    }
+    if (this.loggedOut) {
+      return of(false); // the user just logged out; don't try to revive the session
     }
     return this.refresh().pipe(map(token => token !== null));
   }
 
   logout(): void {
+    this.loggedOut = true;
     this.http
       .post(`${AUTH_URL}/logout`, {}, { withCredentials: true })
+      .pipe(
+        finalize(() => {
+          this.clearSession();
+          this.router.navigate(['/login']);
+        })
+      )
       .subscribe({ error: () => {} });
-    this.clearSession();
-    this.router.navigate(['/login']);
   }
 
   private setSession(res: AuthResponse): User {
     this.accessToken = res.accessToken;
+    this.loggedOut = false;
     this.user.set(res.user);
     return res.user;
   }
