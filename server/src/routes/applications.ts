@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import type { ResultSetHeader, RowDataPacket } from 'mysql2';
 import { pool } from '../db';
+import { deleteFile } from '../storage/s3';
 
 const router = Router();
 
@@ -164,6 +165,7 @@ router.patch('/:id', async (req, res) => {
   }
 });
 
+
 // DELETE: remove an application
 router.delete('/:id', async (req, res) => {
   const id = Number(req.params.id);
@@ -173,6 +175,14 @@ router.delete('/:id', async (req, res) => {
 
   try {
     const userId = req.userId!;
+    const [docs] = await pool.query<RowDataPacket[]>(
+      `SELECT d.s3_key
+      FROM documents d
+      JOIN applications a ON a.id = d.application_id
+      WHERE a.id = ? AND a.user_id = ?`,
+      [id, userId]
+    );
+    await Promise.all(docs.map(doc => deleteFile(doc.s3_key)));
     const [result] = await pool.query<ResultSetHeader>(
       'DELETE FROM applications WHERE id = ? AND user_id = ?',
       [id, userId]

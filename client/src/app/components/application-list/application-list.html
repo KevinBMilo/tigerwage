@@ -35,6 +35,7 @@
       @if (app.notes) {
         <p><em>{{ app.notes }}</em></p>
       }
+      <app-application-documents [applicationId]="app.id" />
 
       <button type="button" (click)="editingId.set(app.id)">Edit</button>
       <button type="button" (click)="remove(app)">Delete</button>

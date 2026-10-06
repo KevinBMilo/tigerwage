@@ -7,6 +7,7 @@ import applicationsRouter from './routes/applications';
 import { requireAuth } from './middleware/require-auth';
 import cron from 'node-cron';
 import { sendReminders } from './jobs/send-reminders';
+import documentsRouter from './routes/documents';
 
 const app = express();
 
@@ -22,6 +23,7 @@ app.get('/api/health', (req, res) => {
 });
 
 app.use('/api/auth', authRouter);
+app.use('/api/applications/:applicationId/documents', requireAuth, documentsRouter);
 app.use('/api/applications', requireAuth, applicationsRouter);
 
 const port = process.env.PORT || 3000;

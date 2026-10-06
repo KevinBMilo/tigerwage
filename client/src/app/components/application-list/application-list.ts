@@ -7,10 +7,11 @@ import {
   JobApplication,
 } from '../../services/application';
 import { ApplicationForm } from '../application-form/application-form';
+import { ApplicationDocuments } from '../application-documents/application-documents';
 
 @Component({
   selector: 'app-application-list',
-  imports: [DatePipe, TitleCasePipe, ApplicationForm],
+  imports: [DatePipe, TitleCasePipe, ApplicationForm, ApplicationDocuments],
   templateUrl: './application-list.html',
 })
 export class ApplicationList implements OnInit {

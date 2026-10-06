@@ -1,0 +1,31 @@
+<div class="documents">
+  <h4>Documents</h4>
+
+  @for (doc of documents(); track doc.id) {
+    <div>
+      <button type="button" (click)="download(doc)">{{ doc.file_name }}</button>
+      <small>{{ formatSize(doc.size_bytes) }} · {{ doc.uploaded_at | date }}</small>
+      <button type="button" (click)="remove(doc)">Remove</button>
+    </div>
+  } @empty {
+    <p>No documents yet.</p>
+  }
+
+  <label>
+    Attach a file (PDF, Word, or text, up to 5 MB)
+    <input
+      #fileInput
+      type="file"
+      [accept]="accept"
+      [disabled]="uploading()"
+      (change)="onFileSelected(fileInput)"
+    />
+  </label>
+
+  @if (uploading()) {
+    <p>Uploading…</p>
+  }
+  @if (errorMessage()) {
+    <p>{{ errorMessage() }}</p>
+  }
+</div>
