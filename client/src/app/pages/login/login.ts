@@ -1,7 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth';
 
 @Component({
@@ -21,6 +21,12 @@ export class Login {
   errorMessage = signal<string | null>(null);
   infoMessage = signal<string | null>(null);
   needsVerification = signal(false);
+
+  constructor() {
+    if (inject(ActivatedRoute).snapshot.queryParamMap.has('deleted')) {
+      this.infoMessage.set('Your account has been deleted.');
+    }
+  }
 
   form = this.fb.nonNullable.group({
     email: ['', [Validators.required, Validators.email]],

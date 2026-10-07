@@ -1,8 +1,9 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { Observable, catchError, finalize, map, of, shareReplay } from 'rxjs';
+import { Observable, catchError, finalize, map, of, shareReplay, tap } from 'rxjs';
 import { ApplicationService } from './application';
+import { ResumeService } from './resume';
 
 export interface User {
   id: number;
@@ -21,6 +22,8 @@ export class AuthService {
   private http = inject(HttpClient);
   private router = inject(Router);
   private applications = inject(ApplicationService);
+  private resumes = inject(ResumeService);
+  
 
   private accessToken: string | null = null;
   private refreshInFlight$: Observable<string | null> | null = null;
@@ -123,11 +126,36 @@ export class AuthService {
     this.accessToken = null;
     this.user.set(null);
     this.applications.clear();
+    this.resumes.clear();
   }
 
   checkResetToken(token: string): Observable<boolean> {
     return this.http
       .post<{ valid: boolean }>(`${AUTH_URL}/check-reset-token`, { token })
       .pipe(map(res => res.valid));
+  }
+
+  changePassword(currentPassword: string, newPassword: string): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(
+      `${AUTH_URL}/change-password`,
+      { currentPassword, newPassword },
+      { withCredentials: true }
+    );
+  }
+
+  verifyPassword(password: string): Observable<void> {
+    return this.http.post<void>(`${AUTH_URL}/verify-password`, { password });
+  }
+
+  deleteAccount(password: string): Observable<void> {
+    return this.http
+      .post<void>(`${AUTH_URL}/delete-account`, { password }, { withCredentials: true })
+      .pipe(
+        tap(() => {
+          this.loggedOut = true;
+          this.clearSession();
+          this.router.navigate(['/login'], { queryParams: { deleted: 1 } });
+        })
+      );
   }
 }

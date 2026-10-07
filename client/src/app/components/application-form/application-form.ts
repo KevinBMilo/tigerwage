@@ -5,15 +5,20 @@ import {
   ApplicationStatus,
   JobApplication,
 } from '../../services/application';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { RouterLink } from '@angular/router';
+import { ResumeService } from '../../services/resume';
 
 @Component({
   selector: 'app-application-form',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, RouterLink],
   templateUrl: './application-form.html',
 })
 export class ApplicationForm implements OnInit {
   private fb = inject(FormBuilder);
   private service = inject(ApplicationService);
+  private resumeService = inject(ResumeService);
+  resumes = toSignal(this.resumeService.resumes$, { initialValue: [] });
 
   // Inputs and outputs
   application = input<JobApplication | null>(null);
@@ -29,7 +34,8 @@ export class ApplicationForm implements OnInit {
     applied_date: [''],
     interview_date: [''],
     follow_up_date: [''],
-    notes: ['']
+    resume_id: [null as number | null],
+    notes: [''],
   });
 
   get isEditing(): boolean {
@@ -37,19 +43,28 @@ export class ApplicationForm implements OnInit {
   }
 
   ngOnInit() {
-    const app = this.application();
-    if (app) {
-      this.form.setValue({
-        company: app.company,
-        position: app.position,
-        status: app.status,
-        applied_date: app.applied_date ?? '',
-        interview_date: app.interview_date ?? '',
-        follow_up_date: app.follow_up_date ?? '',
-        notes: app.notes ?? ''
-      });
+  const app = this.application();
+
+  this.resumeService.load().subscribe(() => {
+    if (!app) {
+      this.selectDefaultResume();
     }
+
+    });
+
+  if (app) {
+    this.form.setValue({
+      company: app.company,
+      position: app.position,
+      status: app.status,
+      applied_date: app.applied_date ?? '',
+      interview_date: app.interview_date ?? '',
+      follow_up_date: app.follow_up_date ?? '',
+      resume_id: app.resume_id,
+      notes: app.notes ?? '',
+    });
   }
+}
 
   onSubmit() {
     if (this.form.invalid) {
@@ -78,6 +93,7 @@ export class ApplicationForm implements OnInit {
       next: () => {
         if (!app) {
           this.form.reset();
+          this.selectDefaultResume();
         }
         this.submitting.set(false);
         this.done.emit();
@@ -89,8 +105,14 @@ export class ApplicationForm implements OnInit {
     });
   }
 
+  private selectDefaultResume() {
+    const defaultResume = this.resumes().find(r => r.is_default);
+    this.form.controls.resume_id.setValue(defaultResume?.id ?? null);
+  }
+
   clear() {
     this.form.reset();
+    this.selectDefaultResume();
     this.errorMessage.set(null);
   }
 

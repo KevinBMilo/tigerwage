@@ -95,3 +95,16 @@ export function reminderDigestEmail(
     html,
   };
 }
+
+export function accountDeletedEmail(to: string): EmailMessage {
+  return {
+    to,
+    subject: 'Your Occupation account has been deleted',
+    text:
+      `Your Occupation account and all of its data, including applications, documents, and résumés, have been permanently deleted.\n\n` +
+      `If you didn't do this, please reply to this email right away.`,
+    html:
+      `<p>Your Occupation account and all of its data, including applications, documents, and résumés, have been permanently deleted.</p>` +
+      `<p>If you didn't do this, please reply to this email right away.</p>`,
+  };
+}

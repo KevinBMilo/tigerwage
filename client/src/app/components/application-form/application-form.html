@@ -53,6 +53,29 @@
   </label>
 </div>
 
+<fieldset>
+  <legend>Résumé sent</legend>
+
+  @for (resume of resumes(); track resume.id) {
+    <label>
+      <input type="radio" formControlName="resume_id" [value]="resume.id" />
+      {{ resume.nickname }}
+      @if (resume.is_default) {
+        <small>(default)</small>
+      }
+    </label>
+  }
+
+  <label>
+    <input type="radio" formControlName="resume_id" [value]="null" />
+    None
+  </label>
+
+  @if (resumes().length === 0) {
+    <small>Save résumés on your <a routerLink="/profile">profile</a> to choose one here.</small>
+  }
+</fieldset>
+
   <div>
     <label>
       Notes

@@ -5,6 +5,7 @@ import { ApplicationsPage } from './pages/applications-page/applications-page';
 import { VerifyEmail } from './pages/verify-email/verify-email';
 import { ForgotPassword } from './pages/forgot-password/forgot-password';
 import { ResetPassword } from './pages/reset-password/reset-password';
+import { ProfilePage } from './pages/profile/profile';
 
 export const routes: Routes = [
   { path: 'login', component: Login, canActivate: [guestGuard] },
@@ -12,5 +13,6 @@ export const routes: Routes = [
   { path: 'reset-password', component: ResetPassword },
   { path: 'verify-email', component: VerifyEmail },
   { path: '', component: ApplicationsPage, canActivate: [authGuard] },
-  { path: '**', redirectTo: '' },
+  { path: 'profile', component: ProfilePage, canActivate: [authGuard] },
+  { path: '**', redirectTo: '' }
 ];

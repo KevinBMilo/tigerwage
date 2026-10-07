@@ -1,6 +1,10 @@
 <header>
   <h1>Occupation</h1>
   @if (auth.user(); as user) {
+    <nav>
+      <a routerLink="/">Applications</a>
+      <a routerLink="/profile">Profile</a>
+    </nav>
     <span>{{ user.email }}</span>
     <button type="button" (click)="auth.logout()">Log out</button>
   }

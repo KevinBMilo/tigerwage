@@ -8,6 +8,8 @@ import { requireAuth } from './middleware/require-auth';
 import cron from 'node-cron';
 import { sendReminders } from './jobs/send-reminders';
 import documentsRouter from './routes/documents';
+import profileRouter from './routes/profile';
+import resumesRouter from './routes/resumes';
 
 const app = express();
 
@@ -25,6 +27,8 @@ app.get('/api/health', (req, res) => {
 app.use('/api/auth', authRouter);
 app.use('/api/applications/:applicationId/documents', requireAuth, documentsRouter);
 app.use('/api/applications', requireAuth, applicationsRouter);
+app.use('/api/profile', requireAuth, profileRouter);
+app.use('/api/resumes', requireAuth, resumesRouter);
 
 const port = process.env.PORT || 3000;
 

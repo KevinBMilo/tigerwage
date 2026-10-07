@@ -13,9 +13,11 @@ export interface JobApplication {
   interview_date: string | null;
   follow_up_date: string | null;
   notes: string | null;
+  resume_id: number | null;
+  resume_nickname: string | null;
 }
 
-export type NewApplication = Omit<JobApplication, 'id'>;
+export type NewApplication = Omit<JobApplication, 'id' | 'resume_nickname'>;
 
 @Injectable({ providedIn: 'root' })
 export class ApplicationService {

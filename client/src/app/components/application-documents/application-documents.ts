@@ -2,6 +2,7 @@ import { Component, OnInit, inject, input, signal } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { DatePipe } from '@angular/common';
 import { ApplicationDocument, DocumentService } from '../../services/document';
+import { formatFileSize } from '../../format';
 
 const MAX_FILE_BYTES = 5 * 1024 * 1024;
 
@@ -74,8 +75,6 @@ export class ApplicationDocuments implements OnInit {
   }
 
   formatSize(bytes: number): string {
-    if (bytes < 1024) return `${bytes} B`;
-    if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`;
-    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+    return formatFileSize(bytes)
   }
 }

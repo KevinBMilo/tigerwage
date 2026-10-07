@@ -12,7 +12,8 @@ import { requireAuth } from '../middleware/require-auth';
 import { emailLimiter, loginLimiter } from '../middleware/rate-limit';
 import { consumeEmailToken, createEmailToken, isEmailTokenValid } from '../auth/email-tokens';
 import { sendEmail } from '../email/send-email';
-import { passwordChangedEmail, passwordResetEmail, verificationEmail } from '../email/templates';
+import { accountDeletedEmail, passwordChangedEmail, passwordResetEmail, verificationEmail } from '../email/templates';
+import { deleteUserFolder } from '../storage/s3';
 
 const router = Router();
 
@@ -355,6 +356,124 @@ router.post('/check-reset-token', async (req, res) => {
     console.error(err);
     res.status(500).json({ error: 'Failed to check link' });
   }
+});
+
+// CHANGE PASSWORD (while logged in)
+router.post('/change-password', requireAuth, loginLimiter, async (req, res) => {
+  const { currentPassword, newPassword } = req.body ?? {};
+
+  if (typeof currentPassword !== 'string' || typeof newPassword !== 'string') {
+    res.status(400).json({ error: 'Current and new passwords are required' });
+    return;
+  }
+  if (newPassword.length < 8) {
+    res.status(400).json({ error: 'New password must be at least 8 characters' });
+    return;
+  }
+
+  try {
+    const [rows] = await pool.query<RowDataPacket[]>(
+      'SELECT email, password_hash FROM users WHERE id = ?',
+      [req.userId]
+    );
+    const user = rows[0];
+
+    if (!user || !(await bcrypt.compare(currentPassword, user.password_hash))) {
+      // 400, not 401: a 401 would make Angular think the session expired
+      res.status(400).json({ error: 'Current password is incorrect' });
+      return;
+    }
+
+    const passwordHash = await bcrypt.hash(newPassword, 12);
+    await pool.query('UPDATE users SET password_hash = ? WHERE id = ?', [passwordHash, req.userId]);
+
+    // Log out every other session, but keep this one
+    const currentToken = req.cookies?.[REFRESH_COOKIE];
+    await pool.query(
+      `UPDATE refresh_tokens SET revoked_at = NOW()
+       WHERE user_id = ? AND revoked_at IS NULL AND token_hash <> ?`,
+      [req.userId, currentToken ? hashToken(currentToken) : '']
+    );
+
+    try {
+      await sendEmail(passwordChangedEmail(user.email));
+    } catch (emailErr) {
+      console.error('Failed to send password changed email', emailErr);
+    }
+
+    res.json({ message: 'Password updated. Any other devices have been logged out.' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to change password' });
+  }
+});
+
+// DELETE ACCOUNT: permanently remove the user, their files, and all their data
+router.post('/delete-account', requireAuth, loginLimiter, async (req, res) => {
+  const { password } = req.body ?? {};
+
+  if (typeof password !== 'string' || password === '') {
+    res.status(400).json({ error: 'Password is required' });
+    return;
+  }
+
+  try {
+    const [rows] = await pool.query<RowDataPacket[]>(
+      'SELECT email, password_hash FROM users WHERE id = ?',
+      [req.userId]
+    );
+    const user = rows[0];
+
+    if (!user || !(await bcrypt.compare(password, user.password_hash))) {
+      // 400, not 401, so Angular doesn't mistake it for an expired session
+      res.status(400).json({ error: 'Password is incorrect' });
+      return;
+    }
+
+    // Files first: if this fails, the account still exists and the user can simply try again
+    const filesDeleted = await deleteUserFolder(req.userId!);
+
+    // Deleting the user removes everything else through ON DELETE CASCADE
+    await pool.query('DELETE FROM users WHERE id = ?', [req.userId]);
+
+    console.log(`Deleted account ${req.userId} and ${filesDeleted} file(s)`);
+
+    res.clearCookie(REFRESH_COOKIE, { path: COOKIE_PATH });
+
+    try {
+      await sendEmail(accountDeletedEmail(user.email));
+    } catch (emailErr) {
+      console.error('Failed to send account deleted email', emailErr);
+    }
+
+    res.status(204).send();
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to delete account. Please try again.' });
+  }
+});
+
+// VERIFY PASSWORD: confirm the current password before a sensitive action
+router.post('/verify-password', requireAuth, loginLimiter, async (req, res) => {
+  const { password } = req.body ?? {};
+
+  if (typeof password !== 'string' || password === '') {
+    res.status(400).json({ error: 'Password is required' });
+    return;
+  }
+
+  const [rows] = await pool.query<RowDataPacket[]>(
+    'SELECT password_hash FROM users WHERE id = ?',
+    [req.userId]
+  );
+  const correct = rows[0] ? await bcrypt.compare(password, rows[0].password_hash) : false;
+
+  if (!correct) {
+    res.status(400).json({ error: 'Password is incorrect' });
+    return;
+  }
+
+  res.status(204).send();
 });
 
 export default router;

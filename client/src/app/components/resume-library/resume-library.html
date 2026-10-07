@@ -1,0 +1,74 @@
+@for (resume of resumes(); track resume.id) {
+  <div class="resume">
+    @if (renamingId() === resume.id) {
+      <label>
+        Nickname
+        <input [formControl]="renameControl" maxlength="50" />
+      </label>
+      <button type="button" (click)="saveRename(resume)">Save</button>
+      <button type="button" (click)="cancelRename()">Cancel</button>
+    } @else {
+      <strong>{{ resume.nickname }}</strong>
+      @if (resume.is_default) {
+        <span>(Default)</span>
+      }
+    }
+
+    <p>
+      <small>
+        {{ resume.file_name }} · {{ formatFileSize(resume.size_bytes) }} ·
+        uploaded {{ resume.uploaded_at | date }}
+      </small>
+    </p>
+
+    <button type="button" (click)="download(resume)">Download</button>
+    @if (renamingId() !== resume.id) {
+      <button type="button" (click)="startRename(resume)">Rename</button>
+    }
+    @if (!resume.is_default) {
+      <button type="button" (click)="makeDefault(resume)">Make default</button>
+    }
+    <button type="button" (click)="remove(resume)">Delete</button>
+  </div>
+} @empty {
+  <p>No résumés saved yet.</p>
+}
+
+@if (canAddMore()) {
+  <form [formGroup]="addForm" (ngSubmit)="upload(fileInput)">
+    <h4>Add a résumé ({{ resumes().length }} of {{ maxResumes }})</h4>
+
+    <div>
+      <label>
+        Nickname
+        <input formControlName="nickname" placeholder="e.g. Full-Stack, Dishwasher" maxlength="50" />
+      </label>
+      @if (addForm.controls.nickname.touched && addForm.controls.nickname.invalid) {
+        <small>Give this résumé a nickname.</small>
+      }
+    </div>
+
+    <div>
+      <label>
+        File (PDF, Word, or text, up to 5 MB)
+        <input
+          #fileInput
+          type="file"
+          [accept]="accept"
+          [disabled]="uploading()"
+          (change)="onFileSelected(fileInput)"
+        />
+      </label>
+    </div>
+
+    <button type="submit" [disabled]="uploading()">
+      {{ uploading() ? 'Uploading…' : 'Save résumé' }}
+    </button>
+  </form>
+} @else {
+  <p>You've saved the maximum of {{ maxResumes }} résumés. Delete one to add another.</p>
+}
+
+@if (errorMessage()) {
+  <p>{{ errorMessage() }}</p>
+}

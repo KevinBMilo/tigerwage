@@ -4,6 +4,8 @@ import {
   GetObjectCommand,
   HeadObjectCommand,
   DeleteObjectCommand,
+  DeleteObjectsCommand,
+  ListObjectsV2Command,
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
@@ -65,6 +67,48 @@ export async function getFileInfo(
     }
     throw err;
   }
+}
+
+// Deletes every file in one user's folder. Returns how many files were deleted.
+export async function deleteUserFolder(userId: number): Promise<number> {
+  if (!Number.isInteger(userId) || userId <= 0) {
+    throw new Error('Refusing to delete: invalid user id');
+  }
+  const prefix = `users/${userId}/`;
+
+  let deleted = 0;
+  let continuationToken: string | undefined;
+
+  do {
+    const page = await s3().send(
+      new ListObjectsV2Command({
+        Bucket: bucket(),
+        Prefix: prefix,
+        ContinuationToken: continuationToken,
+      })
+    );
+
+    const keys = (page.Contents ?? [])
+      .map(object => object.Key)
+      .filter((key): key is string => !!key);
+
+    if (keys.length > 0) {
+      const result = await s3().send(
+        new DeleteObjectsCommand({
+          Bucket: bucket(),
+          Delete: { Objects: keys.map(Key => ({ Key })), Quiet: true },
+        })
+      );
+      if (result.Errors && result.Errors.length > 0) {
+        throw new Error(`Failed to delete ${result.Errors.length} file(s) in ${prefix}`);
+      }
+      deleted += keys.length;
+    }
+
+    continuationToken = page.IsTruncated ? page.NextContinuationToken : undefined;
+  } while (continuationToken);
+
+  return deleted;
 }
 
 export async function deleteFile(key: string): Promise<void> {

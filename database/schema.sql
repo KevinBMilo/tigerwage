@@ -7,6 +7,13 @@ CREATE TABLE users (
   password_hash VARCHAR(255) NOT NULL,
   email_verified_at DATETIME NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  first_name VARCHAR(100) NULL AFTER email,
+  last_name VARCHAR(100) NULL AFTER first_name,
+  phone VARCHAR(30) NULL AFTER last_name,
+  location VARCHAR(150) NULL AFTER phone,
+  linkedin_url VARCHAR(500) NULL AFTER location,
+  portfolio_url VARCHAR(500) NULL AFTER linkedin_url;
+
 );
 
 CREATE TABLE refresh_tokens (
@@ -30,6 +37,20 @@ CREATE TABLE email_tokens (
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
+CREATE TABLE resumes (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  nickname VARCHAR(50) NOT NULL,
+  file_name VARCHAR(255) NOT NULL,
+  content_type VARCHAR(100) NOT NULL,
+  size_bytes INT NOT NULL,
+  s3_key VARCHAR(500) NOT NULL UNIQUE,
+  is_default BOOLEAN NOT NULL DEFAULT FALSE,
+  uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE KEY uq_resumes_user_nickname (user_id, nickname),
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
 CREATE TABLE applications (
   id INT AUTO_INCREMENT PRIMARY KEY,
   user_id INT NOT NULL,
@@ -42,7 +63,9 @@ CREATE TABLE applications (
   notes TEXT,
   interview_reminder_sent_at DATETIME NULL,
   follow_up_reminder_sent_at DATETIME NULL,
-  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+  resume_id INT NULL,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE, 
+  FOREIGN KEY (resume_id) REFERENCES resumes(id) ON DELETE SET NULL
 );
 
 CREATE TABLE documents (

@@ -3,18 +3,10 @@ import crypto from 'crypto';
 import type { ResultSetHeader, RowDataPacket } from 'mysql2';
 import { pool } from '../db';
 import { createUploadUrl, createDownloadUrl, getFileInfo, deleteFile } from '../storage/s3';
+import { MAX_FILE_BYTES, ALLOWED_TYPES, isAllowedType, cleanFileName } from '../storage/file-rules';
 
 // mergeParams lets this router read :applicationId from the path it's mounted on
 const router = Router({ mergeParams: true });
-
-const MAX_FILE_BYTES = 5 * 1024 * 1024; // 5 MB
-
-const ALLOWED_TYPES: Record<string, string> = {
-  'application/pdf': '.pdf',
-  'application/msword': '.doc',
-  'application/vnd.openxmlformats-officedocument.wordprocessingml.document': '.docx',
-  'text/plain': '.txt',
-};
 
 const DOCUMENT_COLUMNS =
   "id, file_name, content_type, size_bytes, DATE_FORMAT(uploaded_at, '%Y-%m-%dT%H:%i:%s') AS uploaded_at";
@@ -22,16 +14,6 @@ const DOCUMENT_COLUMNS =
 function parseId(value: unknown): number | null {
   const n = Number(value);
   return Number.isInteger(n) && n > 0 ? n : null;
-}
-
-function isAllowedType(type: unknown): type is string {
-  return typeof type === 'string' && Object.hasOwn(ALLOWED_TYPES, type);
-}
-
-// Keeps file names safe for download headers
-function cleanFileName(name: string): string {
-  const cleaned = name.replace(/[^\w.\- ()]/g, '_').trim().slice(0, 200);
-  return cleaned || 'document';
 }
 
 // Runs before every route below: the application must exist AND belong to this user
