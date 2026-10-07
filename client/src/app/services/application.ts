@@ -15,9 +15,10 @@ export interface JobApplication {
   notes: string | null;
   resume_id: number | null;
   resume_nickname: string | null;
+  job_posting_id: number | null;
 }
 
-export type NewApplication = Omit<JobApplication, 'id' | 'resume_nickname'>;
+export type NewApplication = Omit<JobApplication, 'id' | 'resume_nickname' | 'job_posting_id'>;
 
 @Injectable({ providedIn: 'root' })
 export class ApplicationService {
@@ -35,9 +36,7 @@ export class ApplicationService {
 
   addApplication(application: NewApplication): Observable<JobApplication> {
     return this.http.post<JobApplication>(this.apiUrl, application).pipe(
-      tap(created =>
-        this.applicationsSubject.next([created, ...this.applicationsSubject.value])
-      )
+      tap(created => this.addToList(created))
     );
   }
 
@@ -63,5 +62,9 @@ export class ApplicationService {
 
   clear() {
     this.applicationsSubject.next([]);
+  }
+
+  addToList(application: JobApplication) {
+    this.applicationsSubject.next([application, ...this.applicationsSubject.value]);
   }
 }

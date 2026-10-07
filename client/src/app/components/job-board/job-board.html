@@ -1,0 +1,60 @@
+<section>
+  <h2>Jobs for you</h2>
+
+  @if (loadError()) {
+    <p>{{ loadError() }}</p>
+  }
+  @if (errorMessage()) {
+    <p>{{ errorMessage() }}</p>
+  }
+
+  <div class="job-grid">
+    @for (job of jobs(); track job.id) {
+      <article class="job-card">
+        <header>
+          <h3>{{ job.title }}</h3>
+          <p class="company">{{ job.company }}</p>
+        </header>
+
+        <p class="meta">
+          {{ job.location }} · {{ workModeLabels[job.work_mode] }} ·
+          {{ employmentTypeLabels[job.employment_type] }}
+        </p>
+
+        @if (job.salary_min && job.salary_max) {
+          <p class="salary">
+            {{ job.salary_min | currency: 'USD' : 'symbol' : '1.0-0' }} –
+            {{ job.salary_max | currency: 'USD' : 'symbol' : '1.0-0' }}
+            {{ isHourly(job) ? '/ hour' : '/ year' }}
+          </p>
+        }
+
+        <p class="description">{{ job.description }}</p>
+
+        @if (job.skills.length > 0) {
+          <ul class="skills">
+            @for (skill of job.skills; track skill) {
+              <li>{{ skill }}</li>
+            }
+          </ul>
+        }
+
+        <footer>
+          <small>Posted {{ job.posted_date | date }}</small>
+
+          @if (appliedJobIds().has(job.id)) {
+            <span class="applied">Applied ✓</span>
+          } @else {
+            <button type="button" (click)="apply(job)" [disabled]="applyingIds().has(job.id)">
+              {{ applyingIds().has(job.id) ? 'Applying…' : 'Apply' }}
+            </button>
+          }
+        </footer>
+      </article>
+    } @empty {
+      @if (!loadError()) {
+        <p>No jobs to show right now.</p>
+      }
+    }
+  </div>
+</section>

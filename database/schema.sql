@@ -51,6 +51,21 @@ CREATE TABLE resumes (
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
+CREATE TABLE job_postings (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  title VARCHAR(255) NOT NULL,
+  company VARCHAR(255) NOT NULL,
+  location VARCHAR(150) NOT NULL,
+  work_mode ENUM('remote', 'hybrid', 'onsite') NOT NULL,
+  employment_type ENUM('full_time', 'part_time', 'contract', 'internship') NOT NULL,
+  salary_min INT NULL,
+  salary_max INT NULL,
+  description TEXT NOT NULL,
+  skills JSON NULL,
+  posted_date DATE NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE TABLE applications (
   id INT AUTO_INCREMENT PRIMARY KEY,
   user_id INT NOT NULL,
@@ -64,8 +79,11 @@ CREATE TABLE applications (
   interview_reminder_sent_at DATETIME NULL,
   follow_up_reminder_sent_at DATETIME NULL,
   resume_id INT NULL,
+  job_posting_id INT NULL,  
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE, 
   FOREIGN KEY (resume_id) REFERENCES resumes(id) ON DELETE SET NULL
+  UNIQUE KEY uq_applications_user_job (user_id, job_posting_id),
+  FOREIGN KEY (job_posting_id) REFERENCES job_postings(id) ON DELETE SET NULL
 );
 
 CREATE TABLE documents (

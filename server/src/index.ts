@@ -10,6 +10,7 @@ import { sendReminders } from './jobs/send-reminders';
 import documentsRouter from './routes/documents';
 import profileRouter from './routes/profile';
 import resumesRouter from './routes/resumes';
+import jobsRouter from './routes/jobs';
 
 const app = express();
 
@@ -29,6 +30,7 @@ app.use('/api/applications/:applicationId/documents', requireAuth, documentsRout
 app.use('/api/applications', requireAuth, applicationsRouter);
 app.use('/api/profile', requireAuth, profileRouter);
 app.use('/api/resumes', requireAuth, resumesRouter);
+app.use('/api/jobs', requireAuth, jobsRouter);
 
 const port = process.env.PORT || 3000;
 

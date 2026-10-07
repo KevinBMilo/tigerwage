@@ -5,7 +5,7 @@ import { deleteFile } from '../storage/s3';
 
 const router = Router();
 
-async function findApplication(id: number, userId: number) {
+export async function findApplication(id: number, userId: number) {
   const [rows] = await pool.query<RowDataPacket[]>(
     `${APPLICATION_SELECT} WHERE a.id = ? AND a.user_id = ?`,
     [id, userId]
@@ -31,7 +31,7 @@ const VALID_STATUSES = ['applied', 'interviewing', 'offer', 'rejected'];
 
 const APPLICATION_SELECT = `
   SELECT a.id, a.company, a.position, a.status, a.applied_date, a.interview_date,
-         a.follow_up_date, a.notes, a.resume_id, r.nickname AS resume_nickname
+         a.follow_up_date, a.notes, a.resume_id, a.job_posting_id, r.nickname AS resume_nickname
   FROM applications a
   LEFT JOIN resumes r ON r.id = a.resume_id`;
 
