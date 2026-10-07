@@ -1,4 +1,4 @@
-USE occupation;
+USE tigerwage;
 
 INSERT INTO job_postings
   (title, company, location, work_mode, employment_type, salary_min, salary_max, description, skills, posted_date)

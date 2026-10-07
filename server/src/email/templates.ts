@@ -3,13 +3,13 @@ import type { EmailMessage } from './send-email';
 export function verificationEmail(to: string, link: string): EmailMessage {
   return {
     to,
-    subject: 'Confirm your Occupation account',
+    subject: 'Confirm your TigerWage account',
     text:
-      `Welcome to Occupation!\n\n` +
+      `Welcome to TigerWage!\n\n` +
       `Confirm your email address by opening this link:\n${link}\n\n` +
       `This link expires in 24 hours. If you didn't create an account, you can ignore this email.`,
     html:
-      `<p>Welcome to Occupation!</p>` +
+      `<p>Welcome to TigerWage!</p>` +
       `<p><a href="${link}">Confirm your email address</a></p>` +
       `<p>This link expires in 24 hours. If you didn't create an account, you can ignore this email.</p>`,
   };
@@ -18,13 +18,13 @@ export function verificationEmail(to: string, link: string): EmailMessage {
 export function passwordResetEmail(to: string, link: string): EmailMessage {
   return {
     to,
-    subject: 'Reset your Occupation password',
+    subject: 'Reset your TigerWage password',
     text:
-      `We received a request to reset your Occupation password.\n\n` +
+      `We received a request to reset your TigerWage password.\n\n` +
       `Choose a new password by opening this link:\n${link}\n\n` +
       `This link expires in 1 hour. If you didn't ask to reset your password, you can ignore this email; your password won't change.`,
     html:
-      `<p>We received a request to reset your Occupation password.</p>` +
+      `<p>We received a request to reset your TigerWage password.</p>` +
       `<p><a href="${link}">Choose a new password</a></p>` +
       `<p>This link expires in 1 hour. If you didn't ask to reset your password, you can ignore this email; your password won't change.</p>`,
   };
@@ -33,12 +33,12 @@ export function passwordResetEmail(to: string, link: string): EmailMessage {
 export function passwordChangedEmail(to: string): EmailMessage {
   return {
     to,
-    subject: 'Your Occupation password was changed',
+    subject: 'Your TigerWage password was changed',
     text:
-      `The password for your Occupation account was just changed.\n\n` +
+      `The password for your TigerWage account was just changed.\n\n` +
       `If you made this change, no action is needed. If you didn't, reset your password right away from the login page.`,
     html:
-      `<p>The password for your Occupation account was just changed.</p>` +
+      `<p>The password for your TigerWage account was just changed.</p>` +
       `<p>If you made this change, no action is needed. If you didn't, reset your password right away from the login page.</p>`,
   };
 }
@@ -72,8 +72,8 @@ export function reminderDigestEmail(
       .map(i => `<li>${escapeHtml(i.company)}, ${escapeHtml(i.position)} (${i.date})</li>`)
       .join('')}</ul>`;
 
-  let text = 'Here are your Occupation reminders:\n\n';
-  let html = '<p>Here are your Occupation reminders:</p>';
+  let text = 'Here are your TigerWage reminders:\n\n';
+  let html = '<p>Here are your TigerWage reminders:</p>';
 
   if (interviews.length > 0) {
     text += `Upcoming interviews:\n${textList(interviews)}\n\n`;
@@ -84,13 +84,13 @@ export function reminderDigestEmail(
     html += `<h3>Time to follow up</h3>${htmlList(followUps)}`;
   }
 
-  text += `Open Occupation: ${appUrl}`;
-  html += `<p><a href="${appUrl}">Open Occupation</a></p>`;
+  text += `Open TigerWage: ${appUrl}`;
+  html += `<p><a href="${appUrl}">Open TigerWage</a></p>`;
 
   const count = interviews.length + followUps.length;
   return {
     to,
-    subject: `Occupation: ${count} reminder${count === 1 ? '' : 's'}`,
+    subject: `TigerWage: ${count} reminder${count === 1 ? '' : 's'}`,
     text,
     html,
   };
@@ -99,12 +99,12 @@ export function reminderDigestEmail(
 export function accountDeletedEmail(to: string): EmailMessage {
   return {
     to,
-    subject: 'Your Occupation account has been deleted',
+    subject: 'Your TigerWage account has been deleted',
     text:
-      `Your Occupation account and all of its data, including applications, documents, and résumés, have been permanently deleted.\n\n` +
+      `Your TigerWage account and all of its data, including applications, documents, and résumés, have been permanently deleted.\n\n` +
       `If you didn't do this, please reply to this email right away.`,
     html:
-      `<p>Your Occupation account and all of its data, including applications, documents, and résumés, have been permanently deleted.</p>` +
+      `<p>Your TigerWage account and all of its data, including applications, documents, and résumés, have been permanently deleted.</p>` +
       `<p>If you didn't do this, please reply to this email right away.</p>`,
   };
 }

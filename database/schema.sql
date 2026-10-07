@@ -1,5 +1,5 @@
-CREATE DATABASE IF NOT EXISTS occupation;
-USE occupation;
+CREATE DATABASE IF NOT EXISTS tigerwage;
+USE tigerwage;
 
 CREATE TABLE users (
   id INT AUTO_INCREMENT PRIMARY KEY,
