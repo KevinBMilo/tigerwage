@@ -6,6 +6,17 @@ Built with **Angular**, **Node.js / Express**, **MySQL**, and **AWS** (S3 and SE
 
 > **Live demo:** _coming soon_
 
+![Job board](docs/screenshots/job-board.png)
+![Resumes](docs/screenshots/resumes.png)
+![Add Resume](docs/screenshots/add_resume.png)
+![Applications](docs/screenshots/applications.png)
+![Add Application](docs/screenshots/add_application.png)
+![Profile](docs/screenshots/profile.png)
+![Login](docs/screenshots/login.png)
+![Reset Password](docs/screenshots/reset_password.png)
+![Create Account](docs/screenshots/create_account.png)
+![Delete Account](docs/screenshots/delete_account.png)
+
 ---
 
 ## Features
