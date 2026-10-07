@@ -22,10 +22,20 @@ export class Login {
   infoMessage = signal<string | null>(null);
   needsVerification = signal(false);
 
+  private route = inject(ActivatedRoute);
+
   constructor() {
-    if (inject(ActivatedRoute).snapshot.queryParamMap.has('deleted')) {
+    const params = this.route.snapshot.queryParamMap;
+    if (params.has('deleted')) {
       this.infoMessage.set('Your account has been deleted.');
+    } else if (params.has('returnUrl')) {
+      this.infoMessage.set('Please log in to continue.');
     }
+  }
+
+  private safeReturnUrl(): string {
+    const url = this.route.snapshot.queryParamMap.get('returnUrl');
+    return url && url.startsWith('/') && !url.startsWith('//') ? url : '/';
   }
 
   form = this.fb.nonNullable.group({
@@ -63,7 +73,7 @@ export class Login {
   });
 } else {
       this.auth.login(email, password, hp_field).subscribe({
-        next: () => this.router.navigate(['/']),
+        next: () => this.router.navigateByUrl(this.safeReturnUrl()),
         error: (err: HttpErrorResponse) => this.handleError(err),
       });
     }

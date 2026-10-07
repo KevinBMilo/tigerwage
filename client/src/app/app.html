@@ -1,13 +1,17 @@
 <header>
-  <h1>Occupation</h1>
-  @if (auth.user(); as user) {
-    <nav>
-      <a routerLink="/">Applications</a>
+  <h1><a routerLink="/">Occupation</a></h1>
+
+  <nav>
+    <a routerLink="/">Jobs</a>
+    @if (auth.user(); as user) {
+      <a routerLink="/applications">Applications</a>
       <a routerLink="/profile">Profile</a>
-    </nav>
-    <span>{{ user.email }}</span>
-    <button type="button" (click)="auth.logout()">Log out</button>
-  }
+      <span>{{ user.email }}</span>
+      <button type="button" (click)="auth.logout()">Log out</button>
+    } @else {
+      <a routerLink="/login">Log in</a>
+    }
+  </nav>
 </header>
 
 <main>

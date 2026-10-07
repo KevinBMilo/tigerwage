@@ -5,7 +5,7 @@ import { JobBoard } from '../../components/job-board/job-board';
 
 @Component({
   selector: 'app-applications-page',
-  imports: [ApplicationForm, ApplicationList, JobBoard],
+  imports: [ApplicationForm, ApplicationList],
   templateUrl: './applications-page.html',
 })
 export class ApplicationsPage {}

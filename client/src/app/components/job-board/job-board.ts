@@ -4,6 +4,8 @@ import { CurrencyPipe, DatePipe } from '@angular/common';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ApplicationService } from '../../services/application';
 import { EmploymentType, JobPosting, JobService, WorkMode } from '../../services/job';
+import { Router } from '@angular/router';
+import { AuthService } from '../../services/auth';
 
 const WORK_MODE_LABELS: Record<WorkMode, string> = {
   remote: 'Remote',
@@ -27,6 +29,9 @@ const EMPLOYMENT_TYPE_LABELS: Record<EmploymentType, string> = {
 export class JobBoard implements OnInit {
   private jobService = inject(JobService);
   private applicationService = inject(ApplicationService);
+
+  private auth = inject(AuthService);
+  private router = inject(Router);
 
   readonly workModeLabels = WORK_MODE_LABELS;
   readonly employmentTypeLabels = EMPLOYMENT_TYPE_LABELS;
@@ -53,6 +58,10 @@ export class JobBoard implements OnInit {
       next: jobs => this.jobs.set(jobs),
       error: () => this.loadError.set('Could not load job listings.'),
     });
+
+    if (this.auth.isLoggedIn()) {
+      this.applicationService.loadApplications().subscribe();
+    }
   }
 
   isHourly(job: JobPosting): boolean {
@@ -60,6 +69,10 @@ export class JobBoard implements OnInit {
   }
 
   apply(job: JobPosting) {
+    if (!this.auth.isLoggedIn()) {
+      this.router.navigate(['/login'], { queryParams: { returnUrl: this.router.url } });
+      return;
+    }
     this.errorMessage.set(null);
     this.applyingIds.update(ids => new Set(ids).add(job.id));
 
