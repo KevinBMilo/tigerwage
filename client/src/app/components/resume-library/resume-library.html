@@ -1,41 +1,47 @@
 @for (resume of resumes(); track resume.id) {
-  <div class="resume">
+  <div class="resume list-item">
     @if (renamingId() === resume.id) {
       <label>
         Nickname
         <input [formControl]="renameControl" maxlength="50" />
       </label>
-      <button type="button" (click)="saveRename(resume)">Save</button>
-      <button type="button" (click)="cancelRename()">Cancel</button>
+      <div class="actions">
+        <button type="button" (click)="saveRename(resume)">Save</button>
+        <button type="button" (click)="cancelRename()">Cancel</button>
+      </div>
     } @else {
-      <strong>{{ resume.nickname }}</strong>
-      @if (resume.is_default) {
-        <span>(Default)</span>
-      }
-    }
+      <label>
+        <input
+          type="radio"
+          name="defaultResume"
+          [formControl]="defaultControl"
+          [value]="resume.id"
+          (change)="makeDefault(resume)"
+        />
+        <strong>{{ resume.nickname }}</strong>
+        @if (resume.is_default) {
+          <span class="muted">(default)</span>
+        }
+      </label>
 
-    <p>
       <small>
         {{ resume.file_name }} · {{ formatFileSize(resume.size_bytes) }} ·
         uploaded {{ resume.uploaded_at | date }}
       </small>
-    </p>
 
-    <button type="button" (click)="download(resume)">Download</button>
-    @if (renamingId() !== resume.id) {
-      <button type="button" (click)="startRename(resume)">Rename</button>
+      <div class="actions">
+        <button type="button" (click)="download(resume)">Download</button>
+        <button type="button" (click)="startRename(resume)">Rename</button>
+        <button type="button" class="btn-danger-text" (click)="remove(resume)">Delete</button>
+      </div>
     }
-    @if (!resume.is_default) {
-      <button type="button" (click)="makeDefault(resume)">Make default</button>
-    }
-    <button type="button" (click)="remove(resume)">Delete</button>
   </div>
 } @empty {
-  <p>No résumés saved yet.</p>
+  <p class="muted">No résumés saved yet.</p>
 }
 
 @if (canAddMore()) {
-  <form [formGroup]="addForm" (ngSubmit)="upload(fileInput)">
+  <form class="add-resume" [formGroup]="addForm" (ngSubmit)="upload(fileInput)">
     <h4>Add a résumé ({{ resumes().length }} of {{ maxResumes }})</h4>
 
     <div>
@@ -70,5 +76,5 @@
 }
 
 @if (errorMessage()) {
-  <p>{{ errorMessage() }}</p>
+  <p class="error">{{ errorMessage() }}</p>
 }

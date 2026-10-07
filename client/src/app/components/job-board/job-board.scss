@@ -8,16 +8,8 @@
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  padding: 1rem;
-  border: 1px solid #d0d7de;
-  border-radius: 8px;
-  background: #fff;
 
-  h3 {
-    margin: 0;
-    font-size: 1.1rem;
-  }
-
+  h3,
   p {
     margin: 0;
   }
@@ -29,7 +21,7 @@
   .meta,
   .salary {
     font-size: 0.9rem;
-    color: #57606a;
+    color: var(--color-muted);
   }
 
   .description {
@@ -45,10 +37,12 @@
     list-style: none;
 
     li {
-      padding: 0.15rem 0.5rem;
-      border-radius: 999px;
-      background: #eef2f7;
+      padding: 0.15rem 0.6rem;
       font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--color-primary);
+      background: var(--color-primary-soft);
+      border-radius: 999px;
     }
   }
 
@@ -57,10 +51,14 @@
     align-items: center;
     justify-content: space-between;
     margin-top: 0.5rem;
+
+    small {
+      margin: 0;
+    }
   }
 
   .applied {
-    color: #1a7f37;
     font-weight: 600;
+    color: var(--color-success);
   }
 }

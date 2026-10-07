@@ -1,17 +1,18 @@
-<header>
-  <h1><a routerLink="/">TigerWage</a></h1>
-
-  <nav>
-    <a routerLink="/">Jobs</a>
-    @if (auth.user(); as user) {
-      <a routerLink="/applications">Applications</a>
-      <a routerLink="/profile">Profile</a>
-      <span>{{ user.email }}</span>
-      <button type="button" (click)="auth.logout()">Log out</button>
-    } @else {
-      <a routerLink="/login">Log in</a>
-    }
-  </nav>
+<header class="site-header">
+  <div class="inner">
+    <h1 class="brand"><a routerLink="/">{{ appName }}</a></h1>
+    <nav aria-label="Main">
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Jobs</a>
+      @if (auth.user(); as user) {
+        <a routerLink="/applications" routerLinkActive="active">Applications</a>
+        <a routerLink="/profile" routerLinkActive="active">Profile</a>
+        <span class="user-email">{{ user.email }}</span>
+        <button type="button" (click)="auth.logout()">Log out</button>
+      } @else {
+        <a routerLink="/login" routerLinkActive="active">Log in</a>
+      }
+    </nav>
+  </div>
 </header>
 
 <main>

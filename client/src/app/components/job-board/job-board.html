@@ -1,16 +1,16 @@
 <section>
-  <h2>Jobs for you</h2>
+  <h2>Available Jobs</h2>
 
   @if (loadError()) {
     <p>{{ loadError() }}</p>
   }
   @if (errorMessage()) {
-    <p>{{ errorMessage() }}</p>
+    <p class="error">{{ errorMessage() }}</p>
   }
 
   <div class="job-grid">
     @for (job of jobs(); track job.id) {
-      <article class="job-card">
+      <article class="job-card card">
         <header>
           <h3>{{ job.title }}</h3>
           <p class="company">{{ job.company }}</p>

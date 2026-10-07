@@ -1,103 +1,103 @@
-<h2>{{ isEditing ? 'Edit Application' : 'Add Application' }}</h2>
+<section class="card">
+  <h2>{{ isEditing ? 'Edit Application' : 'Add Application' }}</h2>
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div class="form-grid">
+      <div>
+        <label>
+          Company
+          <input formControlName="company" />
+        </label>
+        @if (form.controls.company.touched && form.controls.company.invalid) {
+          <small>Company is required.</small>
+        }
+      </div>
+      <div>
+        <label>
+          Position
+          <input formControlName="position" />
+        </label>
+        @if (form.controls.position.touched && form.controls.position.invalid) {
+          <small>Position is required.</small>
+        }
+      </div>
+      <div>
+        <label>
+          Status
+          <select formControlName="status">
+            <option value="applied">Applied</option>
+            <option value="interviewing">Interviewing</option>
+            <option value="offer">Offer</option>
+            <option value="rejected">Rejected</option>
+          </select>
+        </label>
+      </div>
+      <div>
+        <label>
+          Date applied
+          <input type="date" formControlName="applied_date" />
+        </label>
+      </div>
+      <div>
+        <label>
+          Interview date
+          <input type="date" formControlName="interview_date" />
+        </label>
+      </div>
+      <div>
+      <label>
+        Follow up by
+        <input type="date" formControlName="follow_up_date" />
+      </label>
+      </div>
+    </div>
 
-<form [formGroup]="form" (ngSubmit)="onSubmit()">
-  <div>
-    <label>
-      Company
-      <input formControlName="company" />
-    </label>
-    @if (form.controls.company.touched && form.controls.company.invalid) {
-      <small>Company is required.</small>
+  <fieldset>
+    <legend>Résumé sent</legend>
+
+    @for (resume of resumes(); track resume.id) {
+      <label>
+        <input type="radio" formControlName="resume_id" [value]="resume.id" />
+        {{ resume.nickname }}
+        @if (resume.is_default) {
+          <small>(default)</small>
+        }
+      </label>
     }
-  </div>
 
-  <div>
     <label>
-      Position
-      <input formControlName="position" />
+      <input type="radio" formControlName="resume_id" [value]="null" />
+      None
     </label>
-    @if (form.controls.position.touched && form.controls.position.invalid) {
-      <small>Position is required.</small>
+
+    @if (resumes().length === 0) {
+      <small>Save résumés on your <a routerLink="/profile">profile</a> to choose one here.</small>
     }
-  </div>
+  </fieldset>
 
-  <div>
-    <label>
-      Status
-      <select formControlName="status">
-        <option value="applied">Applied</option>
-        <option value="interviewing">Interviewing</option>
-        <option value="offer">Offer</option>
-        <option value="rejected">Rejected</option>
-      </select>
-    </label>
-  </div>
+    <div>
+      <label>
+        Notes
+        <textarea formControlName="notes"></textarea>
+      </label>
+    </div>
 
-  <div>
-    <label>
-      Date applied
-      <input type="date" formControlName="applied_date" />
-    </label>
-  </div>
-  <div>
-  <label>
-    Interview date
-    <input type="date" formControlName="interview_date" />
-  </label>
-</div>
+    @if (errorMessage()) {
+      <p class="error">{{ errorMessage() }}</p>
+    }
 
-<div>
-  <label>
-    Follow up by
-    <input type="date" formControlName="follow_up_date" />
-  </label>
-</div>
-
-<fieldset>
-  <legend>Résumé sent</legend>
-
-  @for (resume of resumes(); track resume.id) {
-    <label>
-      <input type="radio" formControlName="resume_id" [value]="resume.id" />
-      {{ resume.nickname }}
-      @if (resume.is_default) {
-        <small>(default)</small>
+    <button type="submit" [disabled]="submitting()">
+      @if (submitting()) {
+        Saving…
+      } @else {
+        {{ isEditing ? 'Save Changes' : 'Add Application' }}
       }
-    </label>
+    </button>
+
+    @if (isEditing) {
+      <button type="button" (click)="cancel()">Cancel</button>
+  } @else if (form.dirty) {
+      <button type="button" (click)="clear()">Clear</button>
   }
+  </form>
 
-  <label>
-    <input type="radio" formControlName="resume_id" [value]="null" />
-    None
-  </label>
-
-  @if (resumes().length === 0) {
-    <small>Save résumés on your <a routerLink="/profile">profile</a> to choose one here.</small>
-  }
-</fieldset>
-
-  <div>
-    <label>
-      Notes
-      <textarea formControlName="notes"></textarea>
-    </label>
-  </div>
-
-  @if (errorMessage()) {
-    <p>{{ errorMessage() }}</p>
-  }
-
-  <button type="submit" [disabled]="submitting()">
-    @if (submitting()) {
-      Saving…
-    } @else {
-      {{ isEditing ? 'Save Changes' : 'Add Application' }}
-    }
-  </button>
-
-  @if (isEditing) {
-    <button type="button" (click)="cancel()">Cancel</button>
-} @else if (form.dirty) {
-    <button type="button" (click)="clear()">Clear</button>
-}
-</form>
+</section>

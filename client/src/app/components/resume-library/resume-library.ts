@@ -1,4 +1,4 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, effect, inject, signal } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { DatePipe } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -33,6 +33,15 @@ export class ResumeLibrary implements OnInit {
     nickname: ['', [Validators.required, Validators.maxLength(50)]],
   });
   renameControl = this.fb.nonNullable.control('', [Validators.required, Validators.maxLength(50)]);
+
+  defaultControl = this.fb.control<number | null>(null);
+
+  constructor() {
+    effect(() => {
+      const defaultId = this.resumes().find(r => r.is_default)?.id ?? null;
+      this.defaultControl.setValue(defaultId, { emitEvent: false });
+    });
+  }
 
   ngOnInit() {
     this.resumeService.load().subscribe({

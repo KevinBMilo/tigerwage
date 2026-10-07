@@ -1,46 +1,49 @@
 <h2>My Applications</h2>
 
 @if (errorMessage()) {
-  <p>{{ errorMessage() }}</p>
+  <p class="error">{{ errorMessage() }}</p>
 }
 
-@for (app of applications(); track app.id) {
-  @if (editingId() === app.id) {
-    <app-application-form [application]="app" (done)="editingId.set(null)" />
-  } @else {
-    <div class="application">
-      <h3>{{ app.company }}</h3>
-      <p>{{ app.position }}</p>
+<div class="card-grid">
+  @for (app of applications(); track app.id) {
+    @if (editingId() === app.id) {
+      <app-application-form [application]="app" (done)="editingId.set(null)" />
+    } @else {
+      <div class="application card">
+        <h3>{{ app.company }}</h3>
+        <p>{{ app.position }}</p>
 
-      <label>
-        Status:
-        <select #statusSelect (change)="changeStatus(app, statusSelect)">
-          @for (status of statuses; track status) {
-            <option [value]="status" [selected]="status === app.status">
-              {{ status | titlecase }}
-            </option>
-          }
-        </select>
-      </label>
+        <label>
+          Status:
+          <select #statusSelect (change)="changeStatus(app, statusSelect)">
+            @for (status of statuses; track status) {
+              <option [value]="status" [selected]="status === app.status">
+                {{ status | titlecase }}
+              </option>
+            }
+          </select>
+        </label>
 
-      @if (app.applied_date) {
-        <p>Applied {{ app.applied_date | date }}</p>
-      }
-      @if (app.interview_date) {
-        <p>Interview {{ app.interview_date | date }}</p>
-      }
-      @if (app.follow_up_date) {
-        <p>Follow up by {{ app.follow_up_date | date }}</p>
-      }
-      @if (app.notes) {
-        <p><em>{{ app.notes }}</em></p>
-      }
-      <app-application-documents [applicationId]="app.id" />
-
-      <button type="button" (click)="editingId.set(app.id)">Edit</button>
-      <button type="button" (click)="remove(app)">Delete</button>
-    </div>
+        @if (app.applied_date) {
+          <p>Applied {{ app.applied_date | date }}</p>
+        }
+        @if (app.interview_date) {
+          <p>Interview {{ app.interview_date | date }}</p>
+        }
+        @if (app.follow_up_date) {
+          <p>Follow up by {{ app.follow_up_date | date }}</p>
+        }
+        @if (app.notes) {
+          <p><em>{{ app.notes }}</em></p>
+        }
+        <app-application-documents [applicationId]="app.id" />
+        <div class="actions">
+          <button type="button" (click)="editingId.set(app.id)">Edit</button>
+          <button class="btn-danger-text" type="button" (click)="remove(app)">Delete</button>
+        </div>
+      </div>
+    }
+  } @empty {
+    <p>No applications yet.</p>
   }
-} @empty {
-  <p>No applications yet.</p>
-}
+</div>
