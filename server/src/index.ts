@@ -30,7 +30,7 @@ app.use('/api/applications/:applicationId/documents', requireAuth, documentsRout
 app.use('/api/applications', requireAuth, applicationsRouter);
 app.use('/api/profile', requireAuth, profileRouter);
 app.use('/api/resumes', requireAuth, resumesRouter);
-app.use('/api/jobs', requireAuth, jobsRouter);
+app.use('/api/jobs', jobsRouter);
 
 const port = process.env.PORT || 3000;
 

@@ -2,6 +2,8 @@ import { Router } from 'express';
 import type { ResultSetHeader, RowDataPacket } from 'mysql2';
 import { pool } from '../db';
 import { findApplication } from './applications';
+import { requireAuth } from '../middleware/require-auth';
+
 
 const router = Router();
 
@@ -22,7 +24,7 @@ router.get('/', async (req, res) => {
 });
 
 // APPLY: record an application to this posting
-router.post('/:id/apply', async (req, res) => {
+router.post('/:id/apply', requireAuth, async (req, res) => {
   const jobId = parseId(req.params.id);
   const userId = req.userId!;
 
