@@ -1,38 +1,6 @@
-import express from 'express';
-import cors from 'cors';
-import cookieParser from 'cookie-parser';
-import 'dotenv/config';
-import authRouter from './routes/auth';
-import applicationsRouter from './routes/applications';
-import { requireAuth } from './middleware/require-auth';
 import cron from 'node-cron';
+import { app } from './app';
 import { sendReminders } from './jobs/send-reminders';
-import documentsRouter from './routes/documents';
-import profileRouter from './routes/profile';
-import resumesRouter from './routes/resumes';
-import jobsRouter from './routes/jobs';
-
-const app = express();
-
-app.use(cors({
-  origin: process.env.CORS_ORIGIN ?? 'http://localhost:4200',
-  credentials: true,
-}));
-app.use(express.json());
-app.use(cookieParser());
-
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok' });
-});
-
-app.use('/api/auth', authRouter);
-app.use('/api/applications/:applicationId/documents', requireAuth, documentsRouter);
-app.use('/api/applications', requireAuth, applicationsRouter);
-app.use('/api/profile', requireAuth, profileRouter);
-app.use('/api/resumes', requireAuth, resumesRouter);
-app.use('/api/jobs', jobsRouter);
-
-const port = process.env.PORT || 3000;
 
 if (process.env.REMINDERS_CRON) {
   cron.schedule(process.env.REMINDERS_CRON, () => {
@@ -43,4 +11,5 @@ if (process.env.REMINDERS_CRON) {
   console.log(`Reminders scheduled: ${process.env.REMINDERS_CRON}`);
 }
 
+const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`API running on port ${port}`));

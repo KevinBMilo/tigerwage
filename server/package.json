@@ -5,7 +5,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "tsx watch src/index.ts",
-    "reminders": "tsx src/jobs/run-reminders.ts"
+    "reminders": "tsx src/jobs/run-reminders.ts",
+    "build:lambda": "esbuild src/lambda.ts src/lambda-reminders.ts --bundle --platform=node --target=node22 --format=cjs --sourcemap --minify --external:@aws-sdk/* --outdir=dist",
+    "package:lambda": "npm run build:lambda && powershell -NoProfile -Command \"Copy-Item global-bundle.pem dist/ -Force; Compress-Archive -Path dist/* -DestinationPath lambda.zip -Force\""
   },
   "keywords": [],
   "author": "",
@@ -23,7 +25,8 @@
     "express-rate-limit": "^8.7.0",
     "jsonwebtoken": "^9.0.3",
     "mysql2": "^3.24.5",
-    "node-cron": "^4.6.0"
+    "node-cron": "^4.6.0",
+    "serverless-http": "^4.0.0"
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.10",
@@ -31,6 +34,7 @@
     "@types/express": "^5.0.6",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^26.6.4",
+    "esbuild": "^0.28.2",
     "tsx": "^4.23.15",
     "typescript": "^7.0.2"
   }

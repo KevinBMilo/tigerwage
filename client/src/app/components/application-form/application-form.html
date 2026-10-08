@@ -84,20 +84,22 @@
     @if (errorMessage()) {
       <p class="error">{{ errorMessage() }}</p>
     }
+    <div class="actions">
+      <button type="submit" [disabled]="submitting()">
+          @if (submitting()) {
+            Saving…
+          } @else {
+            {{ isEditing ? 'Save Changes' : 'Add Application' }}
+          }
+        </button>
 
-    <button type="submit" [disabled]="submitting()">
-      @if (submitting()) {
-        Saving…
-      } @else {
-        {{ isEditing ? 'Save Changes' : 'Add Application' }}
+        @if (isEditing) {
+          <button type="button" (click)="cancel()">Cancel</button>
+      } @else if (form.dirty) {
+          <button type="button" (click)="clear()">Clear</button>
       }
-    </button>
-
-    @if (isEditing) {
-      <button type="button" (click)="cancel()">Cancel</button>
-  } @else if (form.dirty) {
-      <button type="button" (click)="clear()">Clear</button>
-  }
+    </div>
+    
   </form>
 
 </section>

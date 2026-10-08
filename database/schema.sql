@@ -4,16 +4,15 @@ USE tigerwage;
 CREATE TABLE users (
   id INT AUTO_INCREMENT PRIMARY KEY,
   email VARCHAR(255) NOT NULL UNIQUE,
+  first_name VARCHAR(100) NULL,
+  last_name VARCHAR(100) NULL,
+  phone VARCHAR(30) NULL,
+  location VARCHAR(150) NULL,
+  linkedin_url VARCHAR(500) NULL,
+  portfolio_url VARCHAR(500) NULL,
   password_hash VARCHAR(255) NOT NULL,
   email_verified_at DATETIME NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-  first_name VARCHAR(100) NULL AFTER email,
-  last_name VARCHAR(100) NULL AFTER first_name,
-  phone VARCHAR(30) NULL AFTER last_name,
-  location VARCHAR(150) NULL AFTER phone,
-  linkedin_url VARCHAR(500) NULL AFTER location,
-  portfolio_url VARCHAR(500) NULL AFTER linkedin_url;
-
 );
 
 CREATE TABLE refresh_tokens (
@@ -75,15 +74,17 @@ CREATE TABLE applications (
   applied_date DATE,
   interview_date DATE NULL,
   follow_up_date DATE NULL,
+  resume_id INT NULL,
+  job_posting_id INT NULL,
   notes TEXT,
   interview_reminder_sent_at DATETIME NULL,
   follow_up_reminder_sent_at DATETIME NULL,
-  resume_id INT NULL,
-  job_posting_id INT NULL,  
-  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE, 
-  FOREIGN KEY (resume_id) REFERENCES resumes(id) ON DELETE SET NULL
   UNIQUE KEY uq_applications_user_job (user_id, job_posting_id),
-  FOREIGN KEY (job_posting_id) REFERENCES job_postings(id) ON DELETE SET NULL
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  CONSTRAINT fk_applications_resume
+    FOREIGN KEY (resume_id) REFERENCES resumes(id) ON DELETE SET NULL,
+  CONSTRAINT fk_applications_job
+    FOREIGN KEY (job_posting_id) REFERENCES job_postings(id) ON DELETE SET NULL
 );
 
 CREATE TABLE documents (
