@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 export interface Profile {
   email: string;
@@ -18,7 +19,7 @@ export type ProfileUpdate = Partial<Omit<Profile, 'email' | 'member_since'>>;
 @Injectable({ providedIn: 'root' })
 export class ProfileService {
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:3000/api/profile';
+  private apiUrl = `${environment.apiUrl}/profile`;
 
   get(): Observable<Profile> {
     return this.http.get<Profile>(this.apiUrl);

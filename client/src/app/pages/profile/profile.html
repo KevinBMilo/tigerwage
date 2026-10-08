@@ -50,10 +50,10 @@
         </div>
 
         @if (detailsMessage()) {
-          <p>{{ detailsMessage() }}</p>
+          <p class="notice">{{ detailsMessage() }}</p>
         }
         @if (detailsError()) {
-          <p>{{ detailsError() }}</p>
+          <p class="error">{{ detailsError() }}</p>
         }
 
         <button type="submit" [disabled]="savingDetails() || detailsForm.pristine">
@@ -92,7 +92,9 @@
             <input type="password" formControlName="confirmPassword" autocomplete="new-password" />
           </label>
           @if (passwordForm.controls.confirmPassword.touched && passwordForm.hasError('passwordsMismatch')) {
-            <small>Passwords don't match.</small>
+            <div class="error">
+              <small>Passwords don't match.</small>
+            </div>
           }
         </div>
 

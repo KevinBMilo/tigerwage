@@ -14,7 +14,12 @@
     </nav>
   </div>
 </header>
-
+<app-site-notice />
 <main>
   <router-outlet />
 </main>
+<footer class="site-footer">
+  <a routerLink="/privacy">Privacy</a>
+  <span>·</span>
+  <span>© 2026 {{ appName }}</span>
+</footer>

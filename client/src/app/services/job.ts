@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { ApplicationService, JobApplication } from './application';
+import { environment } from '../../environments/environment';
 
 export type WorkMode = 'remote' | 'hybrid' | 'onsite';
 export type EmploymentType = 'full_time' | 'part_time' | 'contract' | 'internship';
@@ -24,7 +25,7 @@ export interface JobPosting {
 export class JobService {
   private http = inject(HttpClient);
   private applications = inject(ApplicationService);
-  private apiUrl = 'http://localhost:3000/api/jobs';
+  private apiUrl = `${environment.apiUrl}/jobs`;
 
   list(): Observable<JobPosting[]> {
     return this.http.get<JobPosting[]>(this.apiUrl);

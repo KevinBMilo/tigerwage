@@ -7,6 +7,7 @@ import { ForgotPassword } from './pages/forgot-password/forgot-password';
 import { ResetPassword } from './pages/reset-password/reset-password';
 import { ProfilePage } from './pages/profile/profile';
 import { JobsPage } from './pages/jobs-page/jobs-page';
+import { PrivacyPage } from './pages/privacy/privacy';
 
 export const routes: Routes = [
   { path: '', component: JobsPage },
@@ -16,5 +17,6 @@ export const routes: Routes = [
   { path: 'forgot-password', component: ForgotPassword, canActivate: [guestGuard] },
   { path: 'reset-password', component: ResetPassword },
   { path: 'verify-email', component: VerifyEmail },
+  { path: 'privacy', component: PrivacyPage },
   { path: '**', redirectTo: '' },
 ];

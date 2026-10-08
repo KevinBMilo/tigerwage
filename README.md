@@ -4,7 +4,7 @@ A full-stack job search tracker. Browse job listings, track every application fr
 
 Built with **Angular**, **Node.js / Express**, **MySQL**, and **AWS** (S3 and SES).
 
-> **Live demo:** _coming soon_
+> **Live demo:** [tigerwage.com](https://tigerwage.com)
 
 ![Job board with job cards and Applied badges](docs/screenshots/job_board.png)
 
@@ -58,6 +58,10 @@ Built with **Angular**, **Node.js / Express**, **MySQL**, and **AWS** (S3 and SE
 - Forgot-password flow with one-time emailed links
 - Profile page: edit personal details, change password, delete account (removes all data and files)
 
+**Privacy Page**
+- Explains data handling
+- Instructs how to delete one's data
+
 ---
 
 ## Tech stack
@@ -87,6 +91,20 @@ flowchart LR
 ```
 
 Files never pass through the API server. The browser asks the API for a short-lived presigned URL, uploads straight to S3, then the API verifies the file's real size and type before saving a record. This keeps the server lightweight and fits within AWS Lambda's request size limits.
+
+---
+
+## Deployment
+
+TigerWage runs on AWS:
+
+- **Front end:** Angular build served from a private S3 bucket through CloudFront (HTTPS, caching, and a web application firewall), using origin access control
+- **API:** Express on AWS Lambda behind API Gateway (HTTP API) at `api.tigerwage.com`, with request throttling
+- **Database:** Amazon RDS for MySQL in a private VPC subnet, reachable only from the API's security group, with TLS connections and certificate verification
+- **Private networking:** VPC endpoints let the API reach S3 and SES without internet access
+- **Email:** Amazon SES with a verified domain, DKIM, and DMARC
+- **DNS and certificates:** Cloudflare DNS, with AWS Certificate Manager certificates
+- **Cost guardrails:** budget alerts, anomaly detection, Lambda concurrency limits, and API throttling
 
 ---
 
@@ -210,6 +228,10 @@ npm install
 ng serve
 ```
 
+The front end reads the API address from `client/src/environments/`:
+`environment.development.ts` (used by `ng serve`) points to the local API,
+and `environment.ts` (used by `ng build`) points to the production API.
+
 Open http://localhost:4200.
 
 With `EMAIL_MODE=console`, emails (including confirmation links) are printed in the API's terminal instead of being sent.
@@ -265,8 +287,10 @@ All other routes require an access token, except registration, login, the public
 
 ## Roadmap
 
-- [ ] Deploy to AWS: Angular on S3 + CloudFront, API on Lambda + API Gateway, MySQL on RDS, reminders on EventBridge Scheduler
-- [ ] Visual design and styling
+- [x] Visual design and styling
+- [x] Deploy to AWS: CloudFront + S3, Lambda + API Gateway, private RDS
+- [ ] Reminder job on EventBridge Scheduler
+- [ ] Recruiter demo account
 - [ ] Job search and filters
 - [ ] Change email address
 - [ ] Reminder preferences with unsubscribe links

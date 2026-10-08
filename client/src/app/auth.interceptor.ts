@@ -3,8 +3,9 @@ import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { catchError, switchMap, throwError } from 'rxjs';
 import { AuthService } from './services/auth';
+import { environment } from '../environments/environment';
 
-const API_BASE = 'http://localhost:3000/api';
+const API_BASE = environment.apiUrl;
 const AUTH_ENDPOINTS =
   /\/api\/auth\/(login|register|refresh|logout|verify-email|resend-verification|forgot-password|reset-password|check-reset-token)$/;
 

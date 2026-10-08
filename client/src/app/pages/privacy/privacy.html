@@ -1,0 +1,68 @@
+<article class="card privacy">
+  <h2>Privacy policy</h2>
+  <p class="muted">Last updated {{ lastUpdated }}</p>
+
+  <p>
+    {{ appName }} is a personal portfolio project that helps people organize a job search.
+    This page explains, in plain language, what information it collects and how it's handled.
+  </p>
+
+  <h3>What we collect</h3>
+  <ul>
+    <li><strong>Account details:</strong> your email address and password. Passwords are stored only as secure hashes, never in readable form.</li>
+    <li><strong>Profile details you choose to add:</strong> name, phone, location, and LinkedIn or portfolio links.</li>
+    <li><strong>Your job search data:</strong> the applications you track, including companies, positions, dates, statuses, and notes.</li>
+    <li><strong>Files you upload:</strong> résumés and documents attached to applications.</li>
+  </ul>
+
+  <h3>How it's used</h3>
+  <p>
+    Your information is used only to run {{ appName }} for you: to show your data, store your files,
+    and send emails you need, such as account confirmation, password resets, security notices,
+    and the interview and follow-up reminders you set up.
+  </p>
+
+  <h3>Who can see it</h3>
+  <p>
+    Your data is private to your account. It is not sold, rented, or shared for advertising,
+    and {{ appName }} has no ads or third-party tracking. It is stored and processed using
+    Amazon Web Services (in the United States), with Cloudflare providing domain services.
+  </p>
+
+  <h3>Cookies and browser storage</h3>
+  <p>
+    {{ appName }} uses one essential cookie to keep you signed in securely, and your browser's
+    local storage to remember small preferences, such as hiding the notice at the top of the page.
+    No advertising or analytics cookies are used.
+  </p>
+
+  <h3>How it's protected</h3>
+  <p>
+    All connections use HTTPS. Data and files are encrypted at rest, the database is not reachable
+    from the internet, and uploaded files are private and accessible only through short-lived links
+    that are created for you after you sign in.
+  </p>
+
+  <h3>Deleting your data</h3>
+  <p>
+    You can permanently delete your account at any time from your profile page. This immediately
+    removes your account, applications, résumés, and uploaded files. Automatic database backups,
+    kept to protect against data loss, are erased on a rolling basis within 7 days.
+  </p>
+
+  <h3>Sample job listings</h3>
+  <p>
+    The job listings on {{ appName }} are sample data for demonstration. Applying to one records it
+    in your own tracker; nothing is sent to any employer.
+  </p>
+
+  <h3>Children</h3>
+  <p>{{ appName }} is not intended for anyone under 16.</p>
+
+  <h3>Contact</h3>
+  <p>
+    Questions about your data? Email <a [href]="'mailto:' + contactEmail">{{ contactEmail }}</a>.
+  </p>
+
+  <p><a routerLink="/">Back to jobs</a></p>
+</article>

@@ -364,3 +364,52 @@ small {
   margin-bottom: 0;
   text-align: center;
 }
+.site-notice {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  max-width: var(--content-width);
+  margin: 0 auto;
+  padding: 0.6rem 1rem;
+  font-size: 0.9rem;
+  color: var(--color-primary);
+  background: var(--color-primary-soft);
+  border-bottom: 1px solid var(--color-border);
+
+  p {
+    margin: 0;
+  }
+
+  button {
+    font-size: 1.25rem;
+    line-height: 1;
+    text-decoration: none;
+  }
+}
+
+.privacy {
+  max-width: 760px;
+  margin: 0 auto;
+
+  h3 {
+    margin-top: 1.5rem;
+  }
+
+  ul {
+    padding-left: 1.25rem;
+  }
+
+  li + li {
+    margin-top: 0.4rem;
+  }
+}
+
+.site-footer {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1.5rem 1rem 2rem;
+  font-size: 0.875rem;
+  color: var(--color-muted);
+}

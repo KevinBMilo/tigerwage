@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, map, switchMap, tap } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 export interface Resume {
   id: number;
@@ -15,7 +16,7 @@ export interface Resume {
 @Injectable({ providedIn: 'root' })
 export class ResumeService {
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:3000/api/resumes';
+  private apiUrl = `${environment.apiUrl}/resumes`;
 
   private resumesSubject = new BehaviorSubject<Resume[]>([]);
   resumes$ = this.resumesSubject.asObservable();

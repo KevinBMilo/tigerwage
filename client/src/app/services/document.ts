@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map, switchMap } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 export interface ApplicationDocument {
   id: number;
@@ -15,7 +16,7 @@ export class DocumentService {
   private http = inject(HttpClient);
 
   private baseUrl(applicationId: number): string {
-    return `http://localhost:3000/api/applications/${applicationId}/documents`;
+    return `${environment.apiUrl}/applications/${applicationId}/documents`;
   }
 
   list(applicationId: number): Observable<ApplicationDocument[]> {

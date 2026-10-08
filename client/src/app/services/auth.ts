@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { Observable, catchError, finalize, map, of, shareReplay, tap } from 'rxjs';
 import { ApplicationService } from './application';
 import { ResumeService } from './resume';
+import { environment } from '../../environments/environment';
 
 export interface User {
   id: number;
@@ -15,7 +16,7 @@ interface AuthResponse {
   user: User;
 }
 
-const AUTH_URL = 'http://localhost:3000/api/auth';
+const AUTH_URL = `${environment.apiUrl}/auth`;
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {

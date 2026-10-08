@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 export type ApplicationStatus = 'applied' | 'interviewing' | 'offer' | 'rejected';
 
@@ -23,7 +24,7 @@ export type NewApplication = Omit<JobApplication, 'id' | 'resume_nickname' | 'jo
 @Injectable({ providedIn: 'root' })
 export class ApplicationService {
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:3000/api/applications';
+  private apiUrl = `${environment.apiUrl}/applications`;
 
   private applicationsSubject = new BehaviorSubject<JobApplication[]>([]);
   applications$ = this.applicationsSubject.asObservable();

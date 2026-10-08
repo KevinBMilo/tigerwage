@@ -6,7 +6,8 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "deploy": "ng build && aws s3 sync dist/client/browser s3://tigerwage-web-kev --delete --exclude index.html --cache-control \"public,max-age=31536000,immutable\" --profile occupation && aws s3 cp dist/client/browser/index.html s3://tigerwage-web-kev/index.html --cache-control no-cache --profile occupation && aws cloudfront create-invalidation --distribution-id E37WWT41CZJWW4 --paths /index.html --profile occupation"
   },
   "prettier": {
     "printWidth": 100,
