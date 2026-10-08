@@ -15,7 +15,7 @@ Built with **Angular**, **Node.js / Express**, **MySQL**, and **AWS** (S3 and SE
   <summary>More screenshots</summary>
   <p>
     <img src="docs/screenshots/profile.png" alt="Profile" width="49%" />
-    <img src="docs/screenshots/profile_settings.png" alt="Account Settings" width="49%" />
+    <img src="docs/screenshots/account_settings.png" alt="Account Settings" width="49%" />
     <img src="docs/screenshots/add_application.png" alt="Add application" width="49%" />
     <img src="docs/screenshots/create_account.png" alt="Create Account" width="49%" />
     <img src="docs/screenshots/create_account_error.png" alt="Create Account Error" width="49%" />
