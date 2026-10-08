@@ -7,9 +7,12 @@ Built with **Angular**, **Node.js / Express**, **MySQL**, and **AWS** (S3 and SE
 > **Live demo:** _coming soon_
 
 ![Job board with job cards and Applied badges](docs/screenshots/job_board.png)
+
 ![Applications list with statuses and attached documents](docs/screenshots/my_applications.png)
+
 ![Résumé library with a default résumé selected](docs/screenshots/my_resumes.png)
-![Mobile view of job postings](docs/screenshots/mobile.png)
+
+<img src="docs/screenshots/mobile.png" alt="Mobile view" width="320" />
 
 <details>
   <summary>More screenshots</summary>
