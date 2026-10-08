@@ -10,10 +10,12 @@
 
     <p>
       Didn't get it? Check your spam folder, or
-      <button type="button" (click)="resendVerification()">resend the email</button>.
+      <button type="button" class="link-button" (click)="resendVerification()">resend the email</button>.
     </p>
 
-    <button type="button" (click)="backToLogin()">Back to log in</button>
+    <p>
+      <button type="button" class="link-button" (click)="backToLogin()">Back to log in</button>
+    </p>
   } @else {
     <h2>{{ mode() === 'login' ? 'Log in' : 'Create an account' }}</h2>
 
