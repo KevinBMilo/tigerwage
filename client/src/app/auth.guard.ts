@@ -25,3 +25,13 @@ export const guestGuard: CanActivateFn = () => {
     map(loggedIn => (loggedIn ? router.createUrlTree(['/']) : true))
   );
 };
+
+// For admin pages: logged-in admins only
+export const adminGuard: CanActivateFn = () => {
+  const auth = inject(AuthService);
+  const router = inject(Router);
+
+  return auth.ensureSession().pipe(
+    map(loggedIn => (loggedIn && auth.user()?.isAdmin ? true : router.createUrlTree(['/'])))
+  );
+};

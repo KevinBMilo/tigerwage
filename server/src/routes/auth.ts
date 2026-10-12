@@ -118,7 +118,7 @@ router.post('/login', loginLimiter, async (req, res) => {
 
   try {
     const [rows] = await pool.query<RowDataPacket[]>(
-        'SELECT id, email, password_hash, email_verified_at FROM users WHERE email = ?',
+        'SELECT id, email, password_hash, email_verified_at, is_admin FROM users WHERE email = ?',
         [email.trim().toLowerCase()]
     );
     const user = rows[0];
@@ -138,7 +138,7 @@ router.post('/login', loginLimiter, async (req, res) => {
     }
 
     const accessToken = await issueTokens(res, user.id);
-    res.json({ accessToken, user: { id: user.id, email: user.email } });
+    res.json({ accessToken, user: publicUser(user) });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Failed to log in' });
@@ -156,10 +156,10 @@ router.post('/refresh', async (req, res) => {
 
   try {
     const [rows] = await pool.query<RowDataPacket[]>(
-      `SELECT rt.id, rt.user_id, u.email
-       FROM refresh_tokens rt
-       JOIN users u ON u.id = rt.user_id
-       WHERE rt.token_hash = ? AND rt.revoked_at IS NULL AND rt.expires_at > NOW()`,
+      `SELECT rt.id, rt.user_id, u.email, u.is_admin
+      FROM refresh_tokens rt
+      JOIN users u ON u.id = rt.user_id
+      WHERE rt.token_hash = ? AND rt.revoked_at IS NULL AND rt.expires_at > NOW()`,
       [hashToken(token)]
     );
     const record = rows[0];
@@ -174,7 +174,7 @@ router.post('/refresh', async (req, res) => {
     await pool.query('UPDATE refresh_tokens SET revoked_at = NOW() WHERE id = ?', [record.id]);
 
     const accessToken = await issueTokens(res, record.user_id);
-    res.json({ accessToken, user: { id: record.user_id, email: record.email } });
+    res.json({ accessToken, user: publicUser({ ...record, id: record.user_id }) });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Failed to refresh session' });
@@ -203,7 +203,7 @@ router.post('/logout', async (req, res) => {
 // SESSION CHECK: who am I?
 router.get('/me', requireAuth, async (req, res) => {
   const [rows] = await pool.query<RowDataPacket[]>(
-    'SELECT id, email FROM users WHERE id = ?',
+    'SELECT id, email, is_admin FROM users WHERE id = ?',
     [req.userId]
   );
 
@@ -212,7 +212,7 @@ router.get('/me', requireAuth, async (req, res) => {
     return;
   }
 
-  res.json(rows[0]);
+  res.json(publicUser(rows[0]));
 });
 
 // CONFIRM EMAIL: the link from the email lands here (via the Angular page)
@@ -236,9 +236,12 @@ router.post('/verify-email', async (req, res) => {
       [userId]
     );
 
-    const [rows] = await pool.query<RowDataPacket[]>('SELECT id, email FROM users WHERE id = ?', [userId]);
+    const [rows] = await pool.query<RowDataPacket[]>(
+      'SELECT id, email, is_admin FROM users WHERE id = ?',
+      [userId]
+    );
     const accessToken = await issueTokens(res, userId);
-    res.json({ accessToken, user: rows[0] });
+    res.json({ accessToken, user: publicUser(rows[0]) });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Failed to confirm email' });
@@ -475,5 +478,9 @@ router.post('/verify-password', requireAuth, loginLimiter, async (req, res) => {
 
   res.status(204).send();
 });
+
+function publicUser(row: RowDataPacket) {
+  return { id: row.id, email: row.email, isAdmin: Boolean(row.is_admin) };
+}
 
 export default router;

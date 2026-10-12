@@ -9,6 +9,8 @@ import resumesRouter from './routes/resumes';
 import profileRouter from './routes/profile';
 import jobsRouter from './routes/jobs';
 import { requireAuth } from './middleware/require-auth';
+import adminRouter from './routes/admin';
+import { requireAdmin } from './middleware/require-admin';
 
 export const app = express();
 
@@ -35,6 +37,7 @@ app.use('/api/profile', requireAuth, profileRouter);
 app.use('/api/resumes', requireAuth, resumesRouter);
 app.use('/api/applications/:applicationId/documents', requireAuth, documentsRouter);
 app.use('/api/applications', requireAuth, applicationsRouter);
+app.use('/api/admin', requireAuth, requireAdmin, adminRouter);
 
 // Catches any error a route didn't handle: log the details, send a safe message
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {

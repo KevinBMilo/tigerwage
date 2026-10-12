@@ -12,6 +12,7 @@ CREATE TABLE users (
   portfolio_url VARCHAR(500) NULL,
   password_hash VARCHAR(255) NOT NULL,
   email_verified_at DATETIME NULL,
+  is_admin BOOLEAN NOT NULL DEFAULT FALSE,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

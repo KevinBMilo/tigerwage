@@ -9,6 +9,7 @@ import { environment } from '../../environments/environment';
 export interface User {
   id: number;
   email: string;
+  isAdmin: boolean;
 }
 
 interface AuthResponse {
